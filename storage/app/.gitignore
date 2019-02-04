@@ -1,0 +1,7 @@
+*
+!public/
+!.gitignore
+!bin
+!bin/*
+!public/assets
+!cache
