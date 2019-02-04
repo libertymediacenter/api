@@ -1,6 +1,8 @@
-#IDE's
-.idea
+# IDE's
+
 .vscode
+.idea
+.vagrant
 
 # App
 
