@@ -1,7 +1,6 @@
 *
 !public/
 !.gitignore
-!bin
-!bin/*
+!bin/.gitkeep
 !public/assets
 !cache
