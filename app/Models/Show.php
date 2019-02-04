@@ -15,6 +15,8 @@ namespace App\Models;
  * @property string $status
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property string|null $library_id
+ * @property-read \App\Models\Library|null $library
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Season[] $seasons
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Show newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Show newQuery()
@@ -22,6 +24,7 @@ namespace App\Models;
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Show whereCreatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Show whereEndYear($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Show whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Show whereLibraryId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Show wherePoster($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Show whereSlug($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Show whereStartYear($value)
@@ -37,6 +40,11 @@ class Show extends BaseModel
     public const Ended = 'ended';
     public const Cancelled = 'cancelled';
     public const Unknown = 'unknown';
+
+    public function library()
+    {
+        return $this->belongsTo(Library::class);
+    }
 
     public function seasons()
     {

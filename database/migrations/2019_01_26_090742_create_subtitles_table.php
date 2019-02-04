@@ -27,6 +27,8 @@ class CreateSubtitlesTable extends Migration
 
             $table->timestamps();
         });
+
+        DB::statement('ALTER TABLE subtitles ALTER COLUMN id SET DEFAULT uuid_generate_v4();');
     }
 
     /**

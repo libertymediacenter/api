@@ -18,7 +18,7 @@ class CreateRatingsTable extends Migration
 
             $table->uuid('model_id');
             $table->string('model_type');
-            $table->unique(['model_id', 'model_type'], 'ratings_morph_unique_idx');
+            $table->index(['model_id', 'model_type'], 'ratings_morph_idx');
 
             $table->string('provider_id');
 
@@ -38,7 +38,7 @@ class CreateRatingsTable extends Migration
     public function down()
     {
         Schema::table('ratings', function (Blueprint $table) {
-            $table->dropUnique('ratings_morph_unique_idx');
+            $table->dropIndex('ratings_morph_idx');
         });
 
         Schema::dropIfExists('ratings');

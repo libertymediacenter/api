@@ -24,6 +24,8 @@ class MovieDTO
     public $rating;
     /** @var int */
     public $votes;
+    /** @var \Illuminate\Support\Collection */
+    public $genres;
 
     /**
      * @param string $title
@@ -203,5 +205,23 @@ class MovieDTO
     public function getReleased(): string
     {
         return $this->released;
+    }
+
+    /**
+     * @param \Illuminate\Support\Collection $genres
+     * @return MovieDTO
+     */
+    public function setGenres(\Illuminate\Support\Collection $genres): MovieDTO
+    {
+        $this->genres = $genres;
+        return $this;
+    }
+
+    /**
+     * @return \Illuminate\Support\Collection
+     */
+    public function getGenres(): \Illuminate\Support\Collection
+    {
+        return $this->genres;
     }
 }

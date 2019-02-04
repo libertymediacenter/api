@@ -84,6 +84,7 @@ class ImdbMetadataAgent implements MetadataAgentInterface
         $movie->imdbId = $result->imdbid();
         $movie->rating = $result->rating();
         $movie->votes = $result->votes();
+        $movie->genres = collect($result->genres());
 
         return $movie;
     }

@@ -12,7 +12,8 @@ use Illuminate\Support\Arr;
  * @property string $model_type
  * @property string $provider_id
  * @property string $provider
- * @property int $score
+ * @property float|null $score
+ * @property int|null $votes
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Rating newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Rating newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Rating query()
@@ -22,6 +23,7 @@ use Illuminate\Support\Arr;
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Rating whereProvider($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Rating whereProviderId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Rating whereScore($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Rating whereVotes($value)
  * @mixin \Eloquent
  */
 class Rating extends BaseModel

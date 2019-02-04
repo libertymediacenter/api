@@ -15,7 +15,8 @@ class CreateGenresTable extends Migration
     {
         Schema::create('genres', function (Blueprint $table) {
             $table->uuid('id')->primary();
-            $table->timestamps();
+
+            $table->text('name');
         });
 
         DB::statement('ALTER TABLE genres ALTER COLUMN id SET DEFAULT uuid_generate_v4();');

@@ -4,6 +4,7 @@ namespace App\Jobs;
 
 use App\MetadataAgents\ImdbMetadataAgent;
 use App\Models\Episode;
+use App\Models\Genre;
 use App\Models\Movie;
 use App\Models\Rating;
 use App\Models\Show;
@@ -25,7 +26,7 @@ class MetadataLookup implements ShouldQueue
     private $model;
     private $type;
 
-    private $logPrefix = '';
+    private $logPrefix = self::class;
 
     /**
      * Create a new job instance.
@@ -64,15 +65,25 @@ class MetadataLookup implements ShouldQueue
     private function lookup(): void
     {
         $imdbResult = $this->lookupImdb();
+        $genres = collect([]);
 
         if ($imdbResult) {
             $this->model->fill((array)$imdbResult['movie']);
+
+            /** @var \Illuminate\Support\Collection $genres */
+            $genres->push(...$imdbResult['movie']->genres);
 
             $imdbResult['rating']->model_id = $this->model->id;
             $imdbResult['rating']->save();
 
             $this->fetchPoster($imdbResult['movie']->posterUrl);
         }
+
+        $genres->each(function (string $name) {
+            $genre = Genre::firstOrCreate(['name' => $name]);
+
+            $this->model->genres()->attach($genre);
+        });
     }
 
     private function lookupImdb()
@@ -123,22 +134,5 @@ class MetadataLookup implements ShouldQueue
         \Storage::disk('local')->put("public/{$path}", $image);
 
         $this->model->poster = $path;
-    }
-
-    private function parseType()
-    {
-        if ($this->model instanceof Movie) {
-            return 'Movie';
-        }
-
-        if ($this->model instanceof Show) {
-            return 'Show';
-        }
-
-        if ($this->model instanceof Episode) {
-            return 'Episode';
-        }
-
-        throw new \RuntimeException('Unknown type');
     }
 }
