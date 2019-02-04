@@ -7,6 +7,7 @@ namespace App\Models;
  *
  * @property string $id
  * @property string $name
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Movie[] $movies
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Genre newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Genre newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Genre query()

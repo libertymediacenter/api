@@ -15,6 +15,15 @@ class CreatePeopleTable extends Migration
     {
         Schema::create('people', function (Blueprint $table) {
             $table->uuid('id')->primary();
+
+            $table->text('imdb_id');
+
+            $table->text('name');
+            $table->text('slug')->nullable();
+
+            $table->text('photo')->nullable();
+            $table->text('bio')->nullable();
+
             $table->timestamps();
         });
 

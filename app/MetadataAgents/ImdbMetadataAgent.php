@@ -70,7 +70,7 @@ class ImdbMetadataAgent implements MetadataAgentInterface
         $this->config->language = $config['lang'] ?? 'en-US';
     }
 
-    private function formatMovie(\Imdb\Title $result): MovieDTO
+    private function formatMovie(\Imdb\Title $result, $shortCast = true): MovieDTO
     {
         $movie = new MovieDTO();
 
@@ -85,6 +85,8 @@ class ImdbMetadataAgent implements MetadataAgentInterface
         $movie->rating = $result->rating();
         $movie->votes = $result->votes();
         $movie->genres = collect($result->genres());
+        $movie->cast = collect($result->cast($shortCast));
+
 
         return $movie;
     }

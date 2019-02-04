@@ -6,14 +6,17 @@ use App\MetadataAgents\ImdbMetadataAgent;
 use App\Models\Episode;
 use App\Models\Genre;
 use App\Models\Movie;
+use App\Models\Person;
 use App\Models\Rating;
 use App\Models\Show;
 use GuzzleHttp\Client;
 use Illuminate\Bus\Queueable;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Log;
 use Symfony\Component\HttpFoundation\File\MimeType\ExtensionGuesser;
@@ -65,24 +68,48 @@ class MetadataLookup implements ShouldQueue
     private function lookup(): void
     {
         $imdbResult = $this->lookupImdb();
-        $genres = collect([]);
 
         if ($imdbResult) {
             $this->model->fill((array)$imdbResult['movie']);
 
-            /** @var \Illuminate\Support\Collection $genres */
-            $genres->push(...$imdbResult['movie']->genres);
-
             $imdbResult['rating']->model_id = $this->model->id;
             $imdbResult['rating']->save();
 
-            $this->fetchPoster($imdbResult['movie']->posterUrl);
-        }
+            $this->model->poster = $this->fetchPoster($imdbResult['movie']->posterUrl, $this->model);
+            $this->model->save();
 
+            $this->attachGenres($imdbResult['movie']->genres);
+            $this->attachCast($imdbResult['movie']->cast);
+        }
+    }
+
+    private function attachGenres(Collection $genres)
+    {
         $genres->each(function (string $name) {
             $genre = Genre::firstOrCreate(['name' => $name]);
 
             $this->model->genres()->attach($genre);
+        });
+    }
+
+    private function attachCast(Collection $cast)
+    {
+        $cast->each(function (array $personData) {
+            try {
+                $person = Person::whereImdbId('tt' . $personData['imdb'])->firstOrFail([]);
+            } catch (ModelNotFoundException $exception) {
+                $person = Person::create([
+                    'name'    => $personData['name'],
+                    'imdb_id' => 'tt' . $personData['imdb'],
+                ]);
+
+                if ($personData['photo']) {
+                    $person->photo = $this->fetchPoster($personData['photo'], $person);
+                    $person->save();
+                }
+            }
+
+            $this->model->cast()->attach($person, ['role' => $personData['role']]);
         });
     }
 
@@ -117,7 +144,7 @@ class MetadataLookup implements ShouldQueue
         }
     }
 
-    private function fetchPoster(string $url)
+    private function fetchPoster(string $url, $model)
     {
         $guzzle = new Client();
 
@@ -129,10 +156,11 @@ class MetadataLookup implements ShouldQueue
         }
 
         $ext = File::extension($url);
-        $path = "assets/libraries/images/{$this->model->id}.${ext}";
+        $type = str_slug((new \ReflectionClass($model))->getShortName());
+        $path = "assets/images/{$type}/{$model->id}.${ext}";
 
         \Storage::disk('local')->put("public/{$path}", $image);
 
-        $this->model->poster = $path;
+        return $path;
     }
 }

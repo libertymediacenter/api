@@ -18,10 +18,11 @@ namespace App\Models;
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property string|null $library_id
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Person[] $cast
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Genre[] $genres
  * @property-read \App\Models\Library|null $library
  * @property-read \App\Models\MediaContainer $media
- * @property-read \Illuminate\Database\Eloquent\Model|\Eloquent $ratings
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Rating[] $ratings
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Movie newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Movie newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Movie query()
@@ -58,7 +59,19 @@ class Movie extends BaseModel
         'released' => 'datetime:Y-m-d',
     ];
 
-    protected $with = ['genres', 'ratings'];
+    protected $with = ['genres', 'ratings', 'cast'];
+
+    public function cast()
+    {
+        return $this->belongsToMany(
+            Person::class,
+            'cast',
+            'media_id',
+            'people_id'
+        )
+            ->using(CastPivot::class)
+            ->withPivot('role');
+    }
 
     public function genres()
     {
@@ -66,7 +79,8 @@ class Movie extends BaseModel
             Genre::class,
             'genre_to_media',
             'model_id',
-            'genre_id')->using(GenrePivot::class);
+            'genre_id'
+        )->using(GenrePivot::class);
     }
 
     public function library()

@@ -26,6 +26,8 @@ class MovieDTO
     public $votes;
     /** @var \Illuminate\Support\Collection */
     public $genres;
+    /** @var \Illuminate\Support\Collection */
+    public $cast;
 
     /**
      * @param string $title
@@ -223,5 +225,23 @@ class MovieDTO
     public function getGenres(): \Illuminate\Support\Collection
     {
         return $this->genres;
+    }
+
+    /**
+     * @param \Illuminate\Support\Collection $cast
+     * @return MovieDTO
+     */
+    public function setCast(\Illuminate\Support\Collection $cast): MovieDTO
+    {
+        $this->cast = $cast;
+        return $this;
+    }
+
+    /**
+     * @return \Illuminate\Support\Collection
+     */
+    public function getCast(): \Illuminate\Support\Collection
+    {
+        return $this->cast;
     }
 }
