@@ -30,4 +30,14 @@ class Rating extends BaseModel
     public const TMDB = 'tmdb';
     public const RottenTomatoes = 'rottentomatoes';
     public const MetaCritic = 'metacritic';
+
+    public $timestamps = false;
+
+    protected $fillable = [
+        'model_id',
+        'model_type',
+        'provider_id',
+        'provider',
+        'score',
+    ];
 }

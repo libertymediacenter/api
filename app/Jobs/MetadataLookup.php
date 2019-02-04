@@ -5,6 +5,7 @@ namespace App\Jobs;
 use App\MetadataAgents\ImdbMetadataAgent;
 use App\Models\Episode;
 use App\Models\Movie;
+use App\Models\Rating;
 use App\Models\Show;
 use GuzzleHttp\Client;
 use Illuminate\Bus\Queueable;
@@ -47,9 +48,9 @@ class MetadataLookup implements ShouldQueue
             $this->type = (new \ReflectionClass($this->model))->getShortName();
         } catch (\ReflectionException $e) {
             Log::error("[$this->logPrefix]: Could not get model name.", [
-                'line' => $e->getLine(),
+                'line'    => $e->getLine(),
                 'message' => $e->getMessage(),
-                'trace' => $e->getTrace(),
+                'trace'   => $e->getTrace(),
             ]);
         }
 
@@ -65,26 +66,41 @@ class MetadataLookup implements ShouldQueue
         $imdbResult = $this->lookupImdb();
 
         if ($imdbResult) {
-            $this->model->fill($imdbResult);
-            $this->fetchPoster($imdbResult['poster_url']);
+            $this->model->fill((array)$imdbResult['movie']);
+
+            $imdbResult['rating']->model_id = $this->model->id;
+            $imdbResult['rating']->save();
+
+            $this->fetchPoster($imdbResult['movie']->posterUrl);
         }
     }
 
-    private function lookupImdb(): ?array
+    private function lookupImdb()
     {
         $imdbAgent = new ImdbMetadataAgent();
         /** @var \Imdb\Title $result */
         $result = $imdbAgent->find($this->model->title, $this->type);
 
-       if (!$result) {
-           return null;
-       }
+        if (!$result) {
+            return null;
+        }
 
-       $result = $result[0];
+        $result = $result[0];
 
         switch ($this->type) {
             case 'Movie':
-                return $imdbAgent->getMovie($result->imdbid());
+                $data = $imdbAgent->getMovie($result->imdbid());
+
+                return [
+                    'movie'  => $data,
+                    'rating' => Rating::make([
+                        'model_type'  => Rating::class,
+                        'provider_id' => 'tt' . $result->imdbid(),
+                        'provider'    => Rating::IMDB,
+                        'score'       => $data->rating,
+                        'votes'       => $data->votes,
+                    ]),
+                ];
             case 'Show':
                 break;
         }

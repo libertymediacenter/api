@@ -2,10 +2,12 @@
 
 namespace App\MetadataAgents;
 
-use App\MetadataAgents\Contracts\RatingInterface;
+use App\MetadataAgents\Contracts\MetadataAgentInterface;
+use App\MetadataAgents\DTO\MovieDTO;
+use App\MetadataAgents\DTO\ShowDTO;
 use Illuminate\Support\Carbon;
 
-class ImdbMetadataAgent implements RatingInterface
+class ImdbMetadataAgent implements MetadataAgentInterface
 {
     private $config;
 
@@ -40,29 +42,64 @@ class ImdbMetadataAgent implements RatingInterface
         return $query->search($title, $types);
     }
 
-    public function getMovie(string $imdbId, string $lang = 'en-US,en')
+    public function getMovie(string $imdbId, array $options = []): MovieDTO
     {
-        $this->config->language = $lang;
+        $this->setConfig($options);
+
         $res = new \Imdb\Title($imdbId);
 
         return $this->formatMovie($res);
     }
 
-    private function formatMovie(\Imdb\Title $title): array
+    public function getShow(string $imdbId, array $options = []): ShowDTO
     {
-        return [
-            'title' => $title->title(),
-            'year' => $title->year(),
-            'released' => $this->parseReleaseDate($title->releaseInfo()[0]),
-            'runtime' => $title->runtime(),
-            'tagline' => $title->tagline(),
-            'summary' => $title->storyline(),
-            'plot' => null, // $title->synopsis(),
-            'poster_url' => $title->photo($thumb = false),
-            'imdb_id' => $title->imdbid(),
-            'imdb_rating' => $title->rating(),
-            'imdb_votes' => $title->votes(),
-        ];
+        $this->setConfig($options);
+
+        $res = new \Imdb\Title($imdbId);
+
+        return $this->formatShow($res);
+    }
+
+    public function getSeason(string $imdbId, array $options = [])
+    {
+        $this->setConfig($options);
+    }
+
+    private function setConfig(array $config)
+    {
+        $this->config->language = $config['lang'] ?? 'en-US';
+    }
+
+    private function formatMovie(\Imdb\Title $result): MovieDTO
+    {
+        $movie = new MovieDTO();
+
+        $movie->title = $result->title();
+        $movie->year = $result->year();
+        $movie->released = $this->parseReleaseDate($result->releaseInfo()[0]);
+        $movie->runtime = $result->runtime();
+        $movie->tagline = $result->tagline();
+        $movie->summary = $result->storyline();
+        $movie->posterUrl = $result->photo($thumb = false);
+        $movie->imdbId = $result->imdbid();
+        $movie->rating = $result->rating();
+        $movie->votes = $result->votes();
+
+        return $movie;
+    }
+
+    private function formatShow(\Imdb\Title $result): ShowDTO
+    {
+        $show = new ShowDTO();
+
+        $show->title = $result->title();
+        $show->posterUrl = $result->photo($thumb = false);
+        $show->start_year = $result->year();
+        $show->end_year = $result->endyear();
+        $show->summary = $result->storyline();
+
+
+        return $show;
     }
 
     private function parseReleaseDate(array $date)

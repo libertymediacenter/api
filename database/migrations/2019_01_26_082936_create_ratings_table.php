@@ -23,7 +23,8 @@ class CreateRatingsTable extends Migration
             $table->string('provider_id');
 
             $table->enum('provider', ['imdb', 'tmdb', 'rottentomatoes', 'metacritic']);
-            $table->integer('score');
+            $table->decimal('score')->nullable();
+            $table->integer('votes')->nullable();
         });
 
         DB::statement('ALTER TABLE ratings ALTER COLUMN id SET DEFAULT uuid_generate_v4();');

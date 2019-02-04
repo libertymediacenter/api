@@ -12,6 +12,7 @@
     ],
     "require": {
         "php": "^7.2.13",
+        "adrenth/thetvdb2": "^2.1",
         "doctrine/dbal": "~2.3",
         "fideloper/proxy": "^4.0",
         "imdbphp/imdbphp": "^6.1",
