@@ -18,6 +18,26 @@ class StreamController extends Controller
         $this->hlsStream = new HlsStream();
     }
 
+    public function show(string $type, string $slug)
+    {
+        $movie = \App\Models\Movie::whereSlug($slug)->with('media')->firstOrFail();
+        $path = storage_path("media/{$movie->media->path}");
+        $streamPath = base64_encode($path);
+
+        return response()->json([
+            'stream' => "/stream/playlist/{$streamPath}.m3u8",
+            'startStreamRoute' => route('stream', ['path' => $streamPath]),
+            'video' => [
+                'title' => $movie->title,
+                'year' => $movie->year,
+                'summary' => $movie->summary,
+                'poster' => '/storage/' . $movie->poster,
+                'imdbId' => 'tt' . $movie->imdb_id,
+                'imdbRating' => $movie->imdb_rating,
+            ],
+        ]);
+    }
+
     public function getPlaylist(Request $request, string $base64Path)
     {
         $m3u8 = $this->hlsStream->getPlaylist($base64Path, $this->seekOffset);

@@ -14,4 +14,8 @@ use Illuminate\Http\Request;
 */
 
 Route::get('/movies', 'MovieController@index');
+Route::get('/movies/search', 'MovieSearchController@index');
 Route::get('/movies/{slug}', 'MovieController@show');
+
+
+Route::get('/stream/{type}/{slug}', 'StreamController@show')->name('player');

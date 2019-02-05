@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
+
 /**
  * App\Models\Movie
  *
@@ -23,6 +25,7 @@ namespace App\Models;
  * @property-read \App\Models\Library|null $library
  * @property-read \App\Models\MediaContainer $media
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Rating[] $ratings
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Movie hasGenre($genre)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Movie newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Movie newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Movie query()
@@ -60,6 +63,17 @@ class Movie extends BaseModel
     ];
 
     protected $with = ['genres', 'ratings', 'cast'];
+
+    // Scopes
+
+    public function scopeHasGenre(Builder $query, string $genre)
+    {
+        return $query->whereHas('genres', function (Builder $query) use ($genre) {
+            $query->where('name', '=', $genre);
+        });
+    }
+
+    // Relations
 
     public function cast()
     {

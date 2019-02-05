@@ -28,6 +28,7 @@ class CreatePeopleTable extends Migration
         });
 
         DB::statement('ALTER TABLE people ALTER COLUMN id SET DEFAULT uuid_generate_v4();');
+        DB::statement('ALTER TABLE people ALTER COLUMN "name" TYPE citext;');
     }
 
     /**

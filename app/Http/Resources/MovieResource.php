@@ -21,7 +21,6 @@ class MovieResource extends JsonResource
     public function toArray($request)
     {
         return [
-            'id'      => (string)$this->id,
             'title'   => (string)$this->title,
             'slug'    => (string)$this->slug,
             'year'    => (int)$this->year,

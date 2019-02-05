@@ -20,6 +20,7 @@ class CreateGenresTable extends Migration
         });
 
         DB::statement('ALTER TABLE genres ALTER COLUMN id SET DEFAULT uuid_generate_v4();');
+        DB::statement('ALTER TABLE genres ALTER COLUMN "name" TYPE citext;');
     }
 
     /**
