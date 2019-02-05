@@ -3,10 +3,10 @@
 namespace App\Jobs;
 
 use App\MetadataAgents\FileMetadataAgent;
+use App\Models\Library;
 use App\Models\MediaContainer;
 use App\Models\Movie;
 use App\Models\Video;
-use FFMpeg\FFProbe\DataMapping\Stream;
 use Illuminate\Bus\Queueable;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
@@ -21,6 +21,8 @@ class LibraryScanner implements ShouldQueue
 
     /** @var \Illuminate\Filesystem\FilesystemAdapter */
     private $filesystem;
+    /** @var \App\MetadataAgents\FileMetadataAgent */
+    private $fileMetadataAgent;
 
     private $videoFileExtensions = [
         'mkv',
@@ -43,44 +45,60 @@ class LibraryScanner implements ShouldQueue
     public function handle()
     {
         $this->filesystem = \Storage::disk('media');
-        $fileMetadataAgent = new FileMetadataAgent();
+        $this->fileMetadataAgent = new FileMetadataAgent();
 
-        $directories = $this->getItemDirectories('movies');
+        $libraries = Library::all();
+
+        $libraries->each(function (Library $library) {
+            if ($library->type === 'movie') {
+                $this->scanMovieLibrary($library);
+            }
+        });
+
+        $this->delete();
+
+        return null;
+    }
+
+    private function scanMovieLibrary(Library $library)
+    {
+        $directories = $this->getItemDirectories($library->path);
         $videos = $this->getVideoFiles($directories);
 
         $movies = collect([]);
 
-        $videos->each(function (array $video) use (&$movies, $fileMetadataAgent) {
+        $videos->each(function (array $video) use (&$movies) {
             $path = $this->filesystem->path($video['path']);
 
             $movies->push([
-                'file' => $video,
-                'streams' => $fileMetadataAgent->get($path),
+                'file'    => $video,
+                'streams' => $this->fileMetadataAgent->get($path),
             ]);
         });
 
 
-        $movies->each(function ($movie) {
-            $this->createMovie($movie);
+        $movies->each(function ($movie) use (&$library) {
+            $this->createMovie($movie, $library->id);
         });
     }
 
-    private function createMovie($data)
+    private function createMovie($data, string $libraryId)
     {
         $movie = Movie::create([
-            'title' => $data['file']['filename'],
-            'slug' => str_slug($data['file']['filename']),
+            'title'      => $data['file']['filename'],
+            'slug'       => str_slug($data['file']['filename']),
+            'library_id' => $libraryId,
         ]);
 
         MetadataLookup::dispatch($movie);
 
         $mediaContainer = MediaContainer::create([
-            'media_id' => $movie->id,
+            'media_id'   => $movie->id,
             'media_type' => Movie::class,
-            'path' => $data['file']['path'],
-            'bitrate' => $data['streams']['format']->get('bit_rate'),
-            'duration' => (int)$data['streams']['format']->get('duration'),
-            'size' => $data['streams']['format']->get('size'),
+            'path'       => $data['file']['path'],
+            'bitrate'    => $data['streams']['format']->get('bit_rate'),
+            'duration'   => (int)$data['streams']['format']->get('duration'),
+            'size'       => $data['streams']['format']->get('size'),
         ]);
 
         /** @var Collection $streams */
@@ -89,17 +107,17 @@ class LibraryScanner implements ShouldQueue
         $streams['video']->each(function ($video) use (&$mediaContainer) {
             Video::create([
                 'media_container_id' => $mediaContainer->id,
-                'display_name' => '',
-                'stream_index' => $video['streamIndex'],
-                'bitrate' => $video['bitrate'],
-                'framerate' => $video['framerate'],
-                'height' => $video['height'],
-                'width' => $video['width'],
-                'codec' => $video['codec'],
-                'chroma_location' => $video['chromaLocation'],
-                'color_range' => $video['colorRange'],
-                'profile' => $video['profile'],
-                'scan_type' => $video['scanType'],
+                'display_name'       => '',
+                'stream_index'       => $video['streamIndex'],
+                'bitrate'            => $video['bitrate'],
+                'framerate'          => $video['framerate'],
+                'height'             => $video['height'],
+                'width'              => $video['width'],
+                'codec'              => $video['codec'],
+                'chroma_location'    => $video['chromaLocation'],
+                'color_range'        => $video['colorRange'],
+                'profile'            => $video['profile'],
+                'scan_type'          => $video['scanType'],
             ]);
         });
     }

@@ -19,6 +19,7 @@ class CreateLibrariesTable extends Migration
             $table->text('name');
             $table->enum('type', ['movie', 'tv', 'sports', 'other']);
             $table->text('metadata_lang')->default('en');
+            $table->text('path');
 
             $table->timestamps();
         });

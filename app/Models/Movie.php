@@ -58,6 +58,7 @@ class Movie extends BaseModel
         'summary',
         'plot',
         'poster',
+        'library_id',
     ];
 
     protected $casts = [

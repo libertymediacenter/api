@@ -14,7 +14,7 @@ class AddLibraryIdColumnToMoviesTable extends Migration
     public function up()
     {
         Schema::table('movies', function (Blueprint $table) {
-            $table->uuid('library_id')->nullable();
+            $table->uuid('library_id');
             $table->foreign('library_id', 'fk_movie_to_library')
                 ->references('id')->on('libraries')
                 ->onUpdate('CASCADE');

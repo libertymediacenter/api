@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\MovieResource;
 use App\Services\Encoding\HlsStream;
 use Illuminate\Contracts\Filesystem\FileNotFoundException;
 use Illuminate\Http\Request;
@@ -26,15 +27,7 @@ class StreamController extends Controller
 
         return response()->json([
             'stream' => "/stream/playlist/{$streamPath}.m3u8",
-            'startStreamRoute' => route('stream', ['path' => $streamPath]),
-            'video' => [
-                'title' => $movie->title,
-                'year' => $movie->year,
-                'summary' => $movie->summary,
-                'poster' => '/storage/' . $movie->poster,
-                'imdbId' => 'tt' . $movie->imdb_id,
-                'imdbRating' => $movie->imdb_rating,
-            ],
+            'video' => new MovieResource($movie),
         ]);
     }
 
@@ -43,10 +36,6 @@ class StreamController extends Controller
         $m3u8 = $this->hlsStream->getPlaylist($base64Path, $this->seekOffset);
 
         return response($m3u8, 200, [
-            'Access-Control-Allow-Origin' => '*',
-            'Access-Control-Allow-Credentials' => 'true',
-            'Access-Control-Allow-Methods' => 'GET, POST, PUT, DELETE, PATCH, OPTIONS, HEAD',
-            'Access-Control-Allow-Headers' => 'Accept, Accept-Language, Authorization, Cache-Control, Content-Disposition, Content-Encoding, Content-Language, Content-Length, Content-MD5, Content-Range, Content-Type, Date, Host, If-Match, If-Modified-Since, If-None-Match, If-Unmodified-Since, Origin, OriginToken, Pragma, Range, Slug, Transfer-Encoding, Want-Digest',
             'Cache-Control' => 'public',
             'Content-Type' => 'application/x-mpegURL',
         ]);
@@ -73,14 +62,7 @@ class StreamController extends Controller
         $segmentPath = storage_path("app/public/transcode/$path");
 
         return response()->download($segmentPath, $path, [
-            'Access-Control-Allow-Origin' => '*',
-            'Access-Control-Allow-Credentials' => 'true',
-            'Access-Control-Allow-Methods' => 'GET, POST, PUT, DELETE, PATCH, OPTIONS, HEAD',
-            'Access-Control-Allow-Headers' => 'Accept, Accept-Language, Authorization, Cache-Control, Content-Disposition, Content-Encoding, Content-Language, Content-Length, Content-MD5, Content-Range, Content-Type, Date, Host, If-Match, If-Modified-Since, If-None-Match, If-Unmodified-Since, Origin, OriginToken, Pragma, Range, Slug, Transfer-Encoding, Want-Digest',
-            'Accept-Ranges' => 'bytes',
             'Cache-Control' => 'public',
-            //'Content-Type' => \File::mimeType($segmentPath),
-            //'Content-Length' => \File::size($segmentPath),
         ]);
     }
 

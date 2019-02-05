@@ -29,6 +29,7 @@ class MovieResource extends JsonResource
             'poster'  => 'storage/'.$this->poster,
             'cast'    => $this->whenLoaded('cast', CastResource::collection($this->cast)),
             'genres'  => $this->whenLoaded('genres', GenreResource::collection($this->genres)),
+            'ratings' => $this->whenLoaded('ratings', RatingResource::collection($this->ratings))
         ];
     }
 }

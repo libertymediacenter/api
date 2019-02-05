@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Models\Library;
 use Illuminate\Console\Command;
 
 class SetupDevCommand extends Command
@@ -38,7 +39,20 @@ class SetupDevCommand extends Command
     public function handle()
     {
         $this->call('migrate:fresh');
+        $this->createLibraries();
 
         return 0;
+    }
+
+    private function createLibraries()
+    {
+        $movieLibrary = Library::create([
+            'name'          => 'Movies',
+            'type'          => Library::MOVIE,
+            'metadata_lang' => 'en',
+            'path'          => 'movies',
+        ]);
+
+        $this->output->text('Created Movie Library');
     }
 }

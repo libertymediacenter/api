@@ -1,7 +1,5 @@
 <?php
 
-use Illuminate\Http\Request;
-
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -18,4 +16,4 @@ Route::get('/movies/search', 'MovieSearchController@index');
 Route::get('/movies/{slug}', 'MovieController@show');
 
 
-Route::get('/stream/{type}/{slug}', 'StreamController@show')->name('player');
+Route::get('/stream/{type}/{slug}', 'StreamController@show');

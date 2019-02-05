@@ -9,6 +9,7 @@ namespace App\Models;
  * @property string $name
  * @property string $type
  * @property string $metadata_lang
+ * @property string $path
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Movie[] $movies
@@ -20,6 +21,7 @@ namespace App\Models;
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Library whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Library whereMetadataLang($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Library whereName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Library wherePath($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Library whereType($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Library whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\BaseModel withCacheCooldownSeconds($seconds)
@@ -36,6 +38,7 @@ class Library extends BaseModel
         'name',
         'type',
         'metadata_lang',
+        'path',
     ];
 
     public function movies()
