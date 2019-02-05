@@ -29,6 +29,12 @@ namespace App\Models;
 class Season extends BaseModel
 {
 
+    protected $fillable = [
+        'show_id',
+        'season',
+        'poster',
+    ];
+
     public function show()
     {
         return $this->belongsTo(Show::class);

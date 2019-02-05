@@ -13,6 +13,7 @@ namespace App\Models;
  * @property int|null $end_year
  * @property string|null $summary
  * @property string $status
+ * @property int $thetvdb_id
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property string|null $library_id
@@ -31,6 +32,7 @@ namespace App\Models;
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Show whereStartYear($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Show whereStatus($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Show whereSummary($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Show whereThetvdbId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Show whereTitle($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Show whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\BaseModel withCacheCooldownSeconds($seconds)
@@ -42,6 +44,18 @@ class Show extends BaseModel
     public const Ended = 'ended';
     public const Cancelled = 'cancelled';
     public const Unknown = 'unknown';
+
+    protected $fillable = [
+        'title',
+        'slug',
+        'poster',
+        'start_year',
+        'end_year',
+        'summary',
+        'status',
+        'thetvdb_id',
+        'library_id',
+    ];
 
     public function library()
     {

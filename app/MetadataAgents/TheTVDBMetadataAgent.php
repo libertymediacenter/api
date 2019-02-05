@@ -45,6 +45,18 @@ class TheTVDBMetadataAgent implements MetadataAgentInterface
         return $res;
     }
 
+    /**
+     * @param int $showId
+     * @param array $query
+     * @return \Adrenth\Thetvdb\Model\SeriesEpisodesQuery
+     * @throws \Adrenth\Thetvdb\Exception\RequestFailedException
+     * @throws \Adrenth\Thetvdb\Exception\UnauthorizedException
+     */
+    public function getEpisodes(int $showId, array $query)
+    {
+        return $this->client->series()->getEpisodesWithQuery($showId, $query);
+    }
+
     public function getSeason(string $imdbId, array $options = [])
     {
     }

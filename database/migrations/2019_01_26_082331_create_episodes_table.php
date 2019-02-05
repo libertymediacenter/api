@@ -16,6 +16,9 @@ class CreateEpisodesTable extends Migration
         Schema::create('episodes', function (Blueprint $table) {
             $table->uuid('id')->primary();
 
+            $table->bigInteger('thetvdb_id');
+            $table->string('imdb_id')->nullable();
+
             $table->uuid('season_id')->index();
             $table->foreign('season_id')
                 ->references('id')->on('seasons')

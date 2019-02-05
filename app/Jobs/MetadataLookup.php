@@ -109,7 +109,9 @@ class MetadataLookup implements ShouldQueue
                 }
             }
 
-            $this->model->cast()->attach($person, ['role' => $personData['role']]);
+            if ($person->id) {
+                $this->model->cast()->attach($person, ['role' => $personData['role']]);
+            }
         });
     }
 

@@ -54,5 +54,14 @@ class SetupDevCommand extends Command
         ]);
 
         $this->output->text('Created Movie Library');
+
+        $tvLibrary = Library::create([
+            'name'          => 'TV',
+            'type'          => Library::TV,
+            'metadata_lang' => 'en',
+            'path'          => 'tv',
+        ]);
+
+        $this->output->text('Created TV Library');
     }
 }

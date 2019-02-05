@@ -6,6 +6,8 @@ namespace App\Models;
  * App\Models\Episode
  *
  * @property string $id
+ * @property int $thetvdb_id
+ * @property string $imdb_id
  * @property string $season_id
  * @property string|null $title
  * @property string|null $summary
@@ -21,10 +23,12 @@ namespace App\Models;
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Episode query()
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Episode whereCreatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Episode whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Episode whereImdbId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Episode wherePoster($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Episode whereRuntime($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Episode whereSeasonId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Episode whereSummary($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Episode whereThetvdbId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Episode whereTitle($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Episode whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\BaseModel withCacheCooldownSeconds($seconds)
@@ -32,6 +36,16 @@ namespace App\Models;
  */
 class Episode extends BaseModel
 {
+
+    protected $fillable = [
+        'season_id',
+        'title',
+        'summary',
+        'runtime',
+        'poster',
+        'thetvdb_id',
+        'imdb_id',
+    ];
 
     public function media()
     {

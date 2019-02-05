@@ -28,6 +28,8 @@ class MovieDTO
     public $genres;
     /** @var \Illuminate\Support\Collection */
     public $cast;
+    /** @var array */
+    public $fanart;
 
     /**
      * @param string $title
@@ -243,5 +245,23 @@ class MovieDTO
     public function getCast(): \Illuminate\Support\Collection
     {
         return $this->cast;
+    }
+
+    /**
+     * @param array $fanart
+     * @return MovieDTO
+     */
+    public function setFanart(array $fanart): MovieDTO
+    {
+        $this->fanart = $fanart;
+        return $this;
+    }
+
+    /**
+     * @return array
+     */
+    public function getFanart(): array
+    {
+        return $this->fanart;
     }
 }

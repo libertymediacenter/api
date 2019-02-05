@@ -33,7 +33,7 @@ class TheTVDBProvider
     {
         $token = Redis::get('metadata:provider:tvdb:token');
 
-        if (!$token) {
+        if ($token === null) {
             $token = $this->client
                 ->authentication()
                 ->login(config('tvdb.key'), config('tvdb.username'), config('tvdb.identifier'));

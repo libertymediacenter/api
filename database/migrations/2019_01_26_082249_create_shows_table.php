@@ -25,7 +25,9 @@ class CreateShowsTable extends Migration
             $table->integer('end_year')->nullable();
 
             $table->text('summary')->nullable();
-            $table->enum('status', ['ongoing', 'ended', 'cancelled', 'unknown']);
+            $table->enum('status', ['Continuing', 'ended', 'cancelled', 'unknown']);
+
+            $table->bigInteger('thetvdb_id');
 
             $table->timestamps();
         });

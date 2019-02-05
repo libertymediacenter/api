@@ -19,10 +19,10 @@ use Illuminate\Database\Eloquent\Builder;
  * @property string|null $poster
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
- * @property string|null $library_id
+ * @property string $library_id
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Person[] $cast
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Genre[] $genres
- * @property-read \App\Models\Library|null $library
+ * @property-read \App\Models\Library $library
  * @property-read \App\Models\MediaContainer $media
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Rating[] $ratings
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\BaseModel disableCache()

@@ -12,8 +12,8 @@
 */
 
 Route::get('/movies', 'MovieController@index');
-Route::get('/movies/search', 'MovieSearchController@index');
 Route::get('/movies/{slug}', 'MovieController@show');
 
+Route::get('/hubs/movies', 'LibraryHubController@getMoviesHub');
 
 Route::get('/stream/{type}/{slug}', 'StreamController@show');

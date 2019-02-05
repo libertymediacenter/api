@@ -30,7 +30,8 @@ namespace App\Models;
 class Library extends BaseModel
 {
     public const MOVIE = 'movie';
-    public const SHOW = 'show';
+    public const SHOW = 'tv';
+    public const TV = 'tv';
     public const SPORTS = 'sports';
     public const OTHER = 'other';
 

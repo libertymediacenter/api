@@ -2,35 +2,28 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Resources\MovieResource;
-use App\Models\Movie;
+use App\Http\Resources\LibraryResource;
+use App\Models\Library;
 use Illuminate\Http\Request;
-use Spatie\QueryBuilder\Filter;
-use Spatie\QueryBuilder\QueryBuilder;
 
-class MovieSearchController extends Controller
+class LibraryController extends Controller
 {
     /**
      * Display a listing of the resource.
      *
-     * @param \Illuminate\Http\Request $request
      * @return \Illuminate\Http\Resources\Json\AnonymousResourceCollection
      */
-    public function index(Request $request)
+    public function index()
     {
-        $movies = QueryBuilder::for(Movie::class)
-            ->allowedFilters([
-                Filter::scope('has_genre'),
-            ])
-            ->paginate();
+        $libraries = Library::groupBy(['type', 'id'])->paginate();
 
-        return MovieResource::collection($movies);
+        return LibraryResource::collection($libraries);
     }
 
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request $request
+     * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
@@ -41,7 +34,7 @@ class MovieSearchController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  int $id
+     * @param  int  $id
      * @return \Illuminate\Http\Response
      */
     public function show($id)
@@ -52,8 +45,8 @@ class MovieSearchController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request $request
-     * @param  int $id
+     * @param  \Illuminate\Http\Request  $request
+     * @param  int  $id
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, $id)
@@ -64,7 +57,7 @@ class MovieSearchController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  int $id
+     * @param  int  $id
      * @return \Illuminate\Http\Response
      */
     public function destroy($id)
