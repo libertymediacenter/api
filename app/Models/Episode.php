@@ -15,6 +15,7 @@ namespace App\Models;
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\MediaContainer[] $media
  * @property-read \App\Models\Season $season
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\BaseModel disableCache()
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Episode newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Episode newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Episode query()
@@ -26,6 +27,7 @@ namespace App\Models;
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Episode whereSummary($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Episode whereTitle($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Episode whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\BaseModel withCacheCooldownSeconds($seconds)
  * @mixin \Eloquent
  */
 class Episode extends BaseModel

@@ -14,6 +14,7 @@ use Illuminate\Support\Arr;
  * @property string $provider
  * @property float|null $score
  * @property int|null $votes
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\BaseModel disableCache()
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Rating newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Rating newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Rating query()
@@ -24,6 +25,7 @@ use Illuminate\Support\Arr;
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Rating whereProviderId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Rating whereScore($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Rating whereVotes($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\BaseModel withCacheCooldownSeconds($seconds)
  * @mixin \Eloquent
  */
 class Rating extends BaseModel

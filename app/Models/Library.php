@@ -8,17 +8,21 @@ namespace App\Models;
  * @property string $id
  * @property string $name
  * @property string $type
+ * @property string $metadata_lang
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Movie[] $movies
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\BaseModel disableCache()
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Library newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Library newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Library query()
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Library whereCreatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Library whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Library whereMetadataLang($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Library whereName($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Library whereType($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Library whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\BaseModel withCacheCooldownSeconds($seconds)
  * @mixin \Eloquent
  */
 class Library extends BaseModel
@@ -31,6 +35,7 @@ class Library extends BaseModel
     protected $fillable = [
         'name',
         'type',
+        'metadata_lang',
     ];
 
     public function movies()

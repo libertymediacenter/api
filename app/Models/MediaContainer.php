@@ -20,6 +20,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Audio[] $audios
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Subtitle[] $subtitles
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Video[] $videos
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\BaseModel disableCache()
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\MediaContainer newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\MediaContainer newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\MediaContainer query()
@@ -33,6 +34,7 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\MediaContainer wherePath($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\MediaContainer whereSize($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\MediaContainer whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\BaseModel withCacheCooldownSeconds($seconds)
  * @mixin \Eloquent
  */
 class MediaContainer extends BaseModel

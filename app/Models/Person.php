@@ -13,6 +13,7 @@ namespace App\Models;
  * @property string|null $bio
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\BaseModel disableCache()
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Person newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Person newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Person query()
@@ -24,6 +25,7 @@ namespace App\Models;
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Person wherePhoto($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Person whereSlug($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Person whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\BaseModel withCacheCooldownSeconds($seconds)
  * @mixin \Eloquent
  */
 class Person extends BaseModel

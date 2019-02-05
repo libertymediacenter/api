@@ -21,6 +21,7 @@ namespace App\Models;
  * @property string|null $scan_type
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\BaseModel disableCache()
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Video newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Video newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Video query()
@@ -40,6 +41,7 @@ namespace App\Models;
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Video whereStreamIndex($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Video whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Video whereWidth($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\BaseModel withCacheCooldownSeconds($seconds)
  * @mixin \Eloquent
  */
 class Video extends BaseModel

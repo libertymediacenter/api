@@ -13,6 +13,7 @@ namespace App\Models;
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Episode[] $episodes
  * @property-read \App\Models\Show $show
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\BaseModel disableCache()
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Season newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Season newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Season query()
@@ -22,6 +23,7 @@ namespace App\Models;
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Season whereSeason($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Season whereShowId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Season whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\BaseModel withCacheCooldownSeconds($seconds)
  * @mixin \Eloquent
  */
 class Season extends BaseModel

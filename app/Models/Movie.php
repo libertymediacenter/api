@@ -25,6 +25,7 @@ use Illuminate\Database\Eloquent\Builder;
  * @property-read \App\Models\Library|null $library
  * @property-read \App\Models\MediaContainer $media
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Rating[] $ratings
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\BaseModel disableCache()
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Movie hasGenre($genre)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Movie newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Movie newQuery()
@@ -42,6 +43,7 @@ use Illuminate\Database\Eloquent\Builder;
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Movie whereTitle($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Movie whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Movie whereYear($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\BaseModel withCacheCooldownSeconds($seconds)
  * @mixin \Eloquent
  */
 class Movie extends BaseModel

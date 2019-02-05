@@ -18,6 +18,7 @@ namespace App\Models;
  * @property string|null $library_id
  * @property-read \App\Models\Library|null $library
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Season[] $seasons
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\BaseModel disableCache()
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Show newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Show newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Show query()
@@ -32,6 +33,7 @@ namespace App\Models;
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Show whereSummary($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Show whereTitle($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Show whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\BaseModel withCacheCooldownSeconds($seconds)
  * @mixin \Eloquent
  */
 class Show extends BaseModel
