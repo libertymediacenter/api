@@ -70,8 +70,6 @@ class LibraryScanner implements ShouldQueue
         });
 
         $this->delete();
-
-        return null;
     }
 
     /**
@@ -198,7 +196,7 @@ class LibraryScanner implements ShouldQueue
             'library_id' => $libraryId,
         ]);
 
-        MetadataLookup::dispatch($movie);
+        MovieMetadataLookup::dispatch($movie);
 
         $mediaContainer = MediaContainer::create([
             'media_id'   => $movie->id,
