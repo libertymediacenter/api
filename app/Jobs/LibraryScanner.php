@@ -50,7 +50,7 @@ class LibraryScanner implements ShouldQueue
      *
      * @return void
      */
-    public function handle()
+    public function handle(): void
     {
         $this->filesystem = \Storage::disk('media');
         $this->fileMetadataAgent = new FileMetadataAgent();
@@ -74,6 +74,9 @@ class LibraryScanner implements ShouldQueue
         return null;
     }
 
+    /**
+     * @param \App\Models\Library $library
+     */
     private function scanTvLibrary(Library $library)
     {
         $shows = collect([]);
@@ -98,6 +101,12 @@ class LibraryScanner implements ShouldQueue
         });
     }
 
+    /**
+     * @param $data
+     * @param string $libraryId
+     * @throws \Adrenth\Thetvdb\Exception\RequestFailedException
+     * @throws \Adrenth\Thetvdb\Exception\UnauthorizedException
+     */
     private function createEpisode($data, string $libraryId)
     {
         $file = $data['file'];
@@ -152,6 +161,9 @@ class LibraryScanner implements ShouldQueue
         });
     }
 
+    /**
+     * @param \App\Models\Library $library
+     */
     private function scanMovieLibrary(Library $library)
     {
         $directories = $this->getItemDirectories($library->path);
@@ -174,6 +186,10 @@ class LibraryScanner implements ShouldQueue
         });
     }
 
+    /**
+     * @param $data
+     * @param string $libraryId
+     */
     private function createMovie($data, string $libraryId)
     {
         $movie = Movie::create([
@@ -214,7 +230,11 @@ class LibraryScanner implements ShouldQueue
         });
     }
 
-    private function getItemDirectories(string $directory)
+    /**
+     * @param string $directory
+     * @return \Illuminate\Support\Collection
+     */
+    private function getItemDirectories(string $directory): Collection
     {
         $fileDir = collect($this->filesystem->listContents($directory));
 
@@ -227,7 +247,12 @@ class LibraryScanner implements ShouldQueue
         return $directories;
     }
 
-    private function getVideoFiles(Collection $directories, $recursive = false)
+    /**
+     * @param \Illuminate\Support\Collection $directories
+     * @param bool $recursive
+     * @return \Illuminate\Support\Collection
+     */
+    private function getVideoFiles(Collection $directories, $recursive = false): Collection
     {
         $videos = collect([]);
 
@@ -256,6 +281,10 @@ class LibraryScanner implements ShouldQueue
         return $videos;
     }
 
+    /**
+     * @param $file
+     * @return mixed
+     */
     private function getVideo($file)
     {
         if (\in_array($file['extension'], $this->videoFileExtensions, true)) {

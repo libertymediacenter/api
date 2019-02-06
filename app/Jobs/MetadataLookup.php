@@ -42,7 +42,7 @@ class MetadataLookup implements ShouldQueue
      *
      * @return void
      */
-    public function handle()
+    public function handle(): void
     {
         try {
             $this->type = (new \ReflectionClass($this->model))->getShortName();
@@ -60,6 +60,7 @@ class MetadataLookup implements ShouldQueue
 
         $this->delete();
     }
+
 
     private function lookup(): void
     {
@@ -79,6 +80,9 @@ class MetadataLookup implements ShouldQueue
         }
     }
 
+    /**
+     * @param \Illuminate\Support\Collection $genres
+     */
     private function attachGenres(Collection $genres)
     {
         $genres->each(function (string $name) {
@@ -88,6 +92,9 @@ class MetadataLookup implements ShouldQueue
         });
     }
 
+    /**
+     * @param \Illuminate\Support\Collection $cast
+     */
     private function attachCast(Collection $cast)
     {
         $cast->each(function (array $personData) {
@@ -111,7 +118,10 @@ class MetadataLookup implements ShouldQueue
         });
     }
 
-    private function lookupImdb()
+    /**
+     * @return array|null
+     */
+    private function lookupImdb(): ?array
     {
         $imdbAgent = new ImdbMetadataAgent();
         /** @var \Imdb\Title $result */
