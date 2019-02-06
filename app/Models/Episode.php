@@ -7,7 +7,7 @@ namespace App\Models;
  *
  * @property string $id
  * @property int $thetvdb_id
- * @property string $imdb_id
+ * @property string|null $imdb_id
  * @property string $season_id
  * @property string|null $title
  * @property string|null $summary
