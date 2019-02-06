@@ -39,7 +39,8 @@ class TheTVDBMetadataAgent implements MetadataAgentInterface
         if (array_key_exists('imdb_id', $options)) {
             $res = $this->client->search()->seriesByImdbId($options['imdb_id']);
         } else {
-            $res = $this->client->search()->seriesByName($title);
+            $series = $this->client->search()->seriesByName($title)->getData()->first();
+            $res = $this->client->series()->get($series->getId());
         }
 
         return $res;
@@ -53,22 +54,22 @@ class TheTVDBMetadataAgent implements MetadataAgentInterface
     public function getImage(int $id, $keyType): ?string
     {
         try {
-            if ($keyType === 'series') {
+            if ($keyType === 'poster') {
                 $images = $this->client->series()->getImagesWithQuery($id, [
                     'keyType' => $keyType,
-                ]);
+                ])->getData();
 
-                $poster = $images->getData()->first()->getFileName();
+                $poster = $images->first()->getFileName();
             }
 
             if ($keyType === 'episodes') {
-                $epdata = $this->client->episodes()->get($id);
-
-                $poster = $epdata->getFilename();
+                $poster = $this->client->episodes()->get($id)->getFilename();
             }
 
-            if ($keyType === 'seasons') {
-                //$seasonData = $this->client->se
+            if ($keyType === 'season') {
+                //$images = $this->client->series()->get($id);
+
+                //dd($images);
 
                 return null;
             }
