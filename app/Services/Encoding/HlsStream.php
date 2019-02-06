@@ -60,6 +60,13 @@ class HlsStream
         return $m3u8;
     }
 
+    /**
+     * @param string $path
+     * @param string $audioCodec
+     * @param $startTime
+     * @param $endTime
+     * @return bool
+     */
     public function transcodeSegment(string $path, string $audioCodec, $startTime, $endTime): bool
     {
         Redis::set("transcoding:{$path}", true);
@@ -86,5 +93,38 @@ class HlsStream
         Redis::set("transcoding:{$path}", false);
 
         return true;
+    }
+
+    /**
+     * @param string $base64Path
+     * @param int $seekOffset
+     * @param string $audioCodec
+     * @return string
+     */
+    public function getSegment(string $base64Path, int $seekOffset, string $audioCodec): string
+    {
+        $offset = (int)Str::before(Str::after($base64Path, '_'), '.ts');
+
+        try {
+            $this->getSegmentFile($base64Path);
+        } catch (FileNotFoundException $exception) {
+
+            $ready = $this->transcodeSegment($base64Path, $audioCodec, $offset, $seekOffset);
+
+            if ($ready) {
+                sleep(1);
+            }
+        }
+
+        return storage_path("app/public/transcode/$base64Path");
+    }
+
+    /**
+     * @param $path
+     * @return mixed
+     */
+    private function getSegmentFile($path)
+    {
+        return File::get(storage_path("app/public/transcode/$path"));
     }
 }
