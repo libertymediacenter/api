@@ -51,11 +51,13 @@ Route::prefix('libraries')->group(function () {
  */
 
 Route::prefix('stream')->group(function () {
-    Route::get('/{type}/{slug}', 'StreamController@show');
 
-    Route::get('/{path}', 'StreamController@show')
+    Route::get('{path}', 'StreamController@show')
         ->name('stream');
 
-    Route::get('/playlist/{path}', 'StreamController@getPlaylist')
+    Route::get('playlist/{path}', 'StreamController@getPlaylist')
         ->name('stream-playlist');
+
+
+    Route::get('{type}/{slug}', 'StreamController@show');
 });
