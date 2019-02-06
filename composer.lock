@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "770a8c667c7d803384adba64d612d7ed",
+    "content-hash": "5ebb2058622ddde6555f42cd79f722ed",
     "packages": [
         {
             "name": "adrenth/thetvdb2",
@@ -1910,6 +1910,56 @@
                 "psr-3"
             ],
             "time": "2018-11-05T09:00:11+00:00"
+        },
+        {
+            "name": "mtrajano/laravel-swagger",
+            "version": "v0.2.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/mtrajano/laravel-swagger.git",
+                "reference": "16c298fc5680116bf9de22fccb4ae41c213754f7"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/mtrajano/laravel-swagger/zipball/16c298fc5680116bf9de22fccb4ae41c213754f7",
+                "reference": "16c298fc5680116bf9de22fccb4ae41c213754f7",
+                "shasum": ""
+            },
+            "require-dev": {
+                "orchestra/testbench": "~3.0",
+                "phpunit/phpunit": "6.*"
+            },
+            "suggest": {
+                "ext-yaml": "Required to use the YAML output option"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Mtrajano\\LaravelSwagger\\SwaggerServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "files": [
+                    "src/helpers.php"
+                ],
+                "psr-4": {
+                    "Mtrajano\\LaravelSwagger\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Mauricio Trajano",
+                    "email": "mauriciot1993@gmail.com"
+                }
+            ],
+            "description": "Auto generates the swagger documentation for a laravel project",
+            "time": "2018-04-11T13:11:52+00:00"
         },
         {
             "name": "nesbot/carbon",
