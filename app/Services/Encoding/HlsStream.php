@@ -5,6 +5,7 @@ namespace App\Services\Encoding;
 use App\Services\Encoding\Filters\HLSFilter;
 use App\Services\Encoding\Formats\X264_AAC_HLS;
 use FFMpeg\Coordinate\TimeCode;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Redis;
 use Illuminate\Support\Str;
 
