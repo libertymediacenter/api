@@ -2,8 +2,6 @@
 
 namespace App\MetadataAgents;
 
-use Adrenth\Thetvdb\Model\SeriesImageQueryResult;
-use Adrenth\Thetvdb\Model\SeriesImagesQueryParam;
 use App\Exceptions\NotImplementedException;
 use App\MetadataAgents\Contracts\MetadataAgentInterface;
 use App\Services\Metadata\Providers\TheTVDBProvider;

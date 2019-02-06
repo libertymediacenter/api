@@ -3,12 +3,9 @@
 namespace App\Jobs;
 
 use App\MetadataAgents\ImdbMetadataAgent;
-use App\Models\Episode;
 use App\Models\Genre;
-use App\Models\Movie;
 use App\Models\Person;
 use App\Models\Rating;
-use App\Models\Show;
 use GuzzleHttp\Client;
 use Illuminate\Bus\Queueable;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
@@ -19,7 +16,6 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Log;
-use Symfony\Component\HttpFoundation\File\MimeType\ExtensionGuesser;
 
 class MetadataLookup implements ShouldQueue
 {

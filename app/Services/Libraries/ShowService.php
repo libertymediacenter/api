@@ -2,7 +2,6 @@
 
 namespace App\Services\Libraries;
 
-use Adrenth\Thetvdb\Model\SeriesImageQueryResult;
 use App\MetadataAgents\TheTVDBMetadataAgent;
 use App\Models\Season;
 use App\Models\Show;
