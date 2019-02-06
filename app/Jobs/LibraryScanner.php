@@ -11,6 +11,7 @@ use App\Models\Movie;
 use App\Models\Season;
 use App\Models\Show;
 use App\Models\Video;
+use GuzzleHttp\Client;
 use Illuminate\Bus\Queueable;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Queue\SerializesModels;
@@ -127,6 +128,12 @@ class LibraryScanner implements ShouldQueue
                 'thetvdb_id' => $data->getId(),
                 'library_id' => $libraryId,
             ]);
+
+            $poster = $this->theTvDbMetadataAgent->getImage($data->getId(), 'poster');
+            if ($poster) {
+                $show->poster = $this->fetchPoster($poster, $show);
+                $show->save();
+            }
         }
 
         $episodeMetadata = $this->theTvDbMetadataAgent->getEpisodes($show->thetvdb_id, [
@@ -143,6 +150,11 @@ class LibraryScanner implements ShouldQueue
                 'show_id' => $show->id,
                 'season'  => $seasonNo,
             ]);
+
+//            $poster = $this->theTvDbMetadataAgent->getImage($seasonMetadata->getId(), 'seasons');
+//            if ($poster) {
+//                $this->fetchPoster($poster, $season);
+//            }
         }
 
         $episode = Episode::create([
@@ -151,6 +163,12 @@ class LibraryScanner implements ShouldQueue
             'summary'    => $episodeMetadata->getOverview(),
             'thetvdb_id' => $episodeMetadata->getId(),
         ]);
+
+        $poster = $this->theTvDbMetadataAgent->getImage($episodeMetadata->getId(), 'episodes');
+        if ($poster) {
+            $episode->poster = $this->fetchPoster($poster, $episode);
+            $episode->save();
+        }
 
         $mediaContainer = MediaContainer::create([
             'media_id'   => $episode->id,
@@ -288,5 +306,27 @@ class LibraryScanner implements ShouldQueue
         if (\in_array($file['extension'], $this->videoFileExtensions, true)) {
             return $file;
         }
+    }
+
+    private function fetchPoster(string $url, $model)
+    {
+        $guzzle = new Client();
+
+        try {
+            $r = $guzzle->get($url);
+            $image = $r->getBody();
+        } catch (\Exception $exception) {
+            dump($exception);
+
+            return null;
+        }
+
+        $ext = \File::extension($url);
+        $type = str_slug((new \ReflectionClass($model))->getShortName());
+        $path = "assets/images/{$type}/{$model->id}.${ext}";
+
+        \Storage::disk('local')->put("public/{$path}", $image);
+
+        return $path;
     }
 }

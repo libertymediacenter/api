@@ -24,11 +24,12 @@ class ShowResource extends JsonResource
             'title'      => $this->title,
             'slug'       => $this->slug,
             'poster'     => $this->poster,
-            'start_year' => $this->start_year,
-            'end_year'   => $this->end_year,
+            'startYear' => $this->start_year,
+            'endYear'   => $this->end_year,
             'summary'    => $this->summary,
             'status'     => $this->status,
             'thetvdbId'  => $this->thetvdb_id,
+            'seasons'    => $this->whenLoaded('seasons', SeasonResource::collection($this->seasons)),
         ];
     }
 }

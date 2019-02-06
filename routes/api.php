@@ -15,8 +15,14 @@
  * Media routes
  */
 
-Route::get('/movies', 'MovieController@index');
-Route::get('/movies/{slug}', 'MovieController@show');
+Route::prefix('movies')->group(function () {
+    Route::get('', 'MovieController@index');
+    Route::get('{slug}', 'MovieController@show');
+});
+
+Route::prefix('shows')->group(function () {
+    Route::get('{slug}', 'ShowController@show');
+});
 
 /*
  * Hubs
