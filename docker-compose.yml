@@ -1,0 +1,76 @@
+version: '2'
+
+services:
+  db:
+    container_name: lmc-db
+    image: postgres:11-alpine
+    restart: on-failure
+    networks:
+      - default
+      - lmc-net
+    ports:
+      - 4536
+    environment:
+      POSTGRES_USER: libertymediacenter
+      POSTGRES_PASSWORD: secret
+
+  redis:
+    container_name: lmc-redis
+    image: redis:4-alpine
+    restart: on-failure
+    networks:
+      - default
+      - lmc-net
+    ports:
+      - 6379:6379
+
+  php:
+    container_name: lmc-php
+    build:
+      context: .
+      dockerfile: .docker/php/Dockerfile
+    restart: on-failure
+    networks:
+      - default
+      - lmc-net
+    volumes:
+      - laravel-docker-vendor-sync:/opt/vendor:nocopy
+      - laravel-docker-app-sync:/opt:nocopy
+    environment:
+      XDEBUG_CONFIG: 'remote_host=192.168.31.231'
+      PHP_IDE_CONFIG: 'serverName=docker'
+
+  nginx:
+    container_name: lmc-nginx
+    build:
+      context: .
+      dockerfile: .docker/nginx/Dockerfile
+    restart: on-failure
+    links:
+      - php
+    depends_on:
+      - php
+    env_file:
+      - web-variables.env
+    networks:
+      - default
+      - lmc-proxy
+      - lmc-net
+    expose:
+      - 80
+      - 443
+    volumes:
+      - laravel-docker-vendor-sync:/opt/vendor:nocopy
+      - laravel-docker-app-sync:/opt:nocopy
+
+networks:
+  lmc-proxy:
+  lmc-net:
+
+volumes:
+  laravel-docker-vendor-sync:
+    external: true
+  laravel-docker-app-sync:
+    external: true
+  mysql-data:
+    external: true
