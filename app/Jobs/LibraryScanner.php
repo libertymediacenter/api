@@ -104,11 +104,11 @@ class LibraryScanner implements ShouldQueue
         /** @var Collection $streams */
         $streams = $data['streams'];
 
-        $regex = '/([Ss][0-9]+)([Ee])([0-9]+)/';
+        $regex = '/[Ss]([0-9]+)[Ee]([0-9]+)/';
         preg_match_all($regex, $file['filename'], $matches);
 
-        $season = (int)Str::after($matches[1][0], 'S');
-        $episode = (int)$matches[3][0];
+        $season = (int)$matches[1][0];
+        $episode = (int)$matches[2][0];
 
         $showTitle = Str::before($file['filename'], '-');
 
