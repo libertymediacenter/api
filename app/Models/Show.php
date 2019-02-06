@@ -2,8 +2,6 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Builder;
-
 /**
  * App\Models\Show
  *
@@ -19,6 +17,10 @@ use Illuminate\Database\Eloquent\Builder;
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property string|null $library_id
+ * @property string|null $imdb_id
+ * @property string|null $network
+ * @property int|null $runtime
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Genre[] $genres
  * @property-read \App\Models\Library|null $library
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Season[] $seasons
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\BaseModel disableCache()
@@ -28,8 +30,11 @@ use Illuminate\Database\Eloquent\Builder;
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Show whereCreatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Show whereEndYear($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Show whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Show whereImdbId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Show whereLibraryId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Show whereNetwork($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Show wherePoster($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Show whereRuntime($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Show whereSlug($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Show whereStartYear($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Show whereStatus($value)
@@ -56,7 +61,10 @@ class Show extends BaseModel
         'summary',
         'status',
         'thetvdb_id',
+        'imdb_id',
         'library_id',
+        'network',
+        'runtime',
     ];
 
     public function library()
@@ -67,5 +75,15 @@ class Show extends BaseModel
     public function seasons()
     {
         return $this->hasMany(Season::class);
+    }
+
+    public function genres()
+    {
+        return $this->belongsToMany(
+            Genre::class,
+            'genre_to_media',
+            'model_id',
+            'genre_id'
+        )->using(GenrePivot::class);
     }
 }

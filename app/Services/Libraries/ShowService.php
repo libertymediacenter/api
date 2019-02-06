@@ -3,10 +3,14 @@
 namespace App\Services\Libraries;
 
 use App\MetadataAgents\TheTVDBMetadataAgent;
+use App\Models\Episode;
+use App\Models\Genre;
 use App\Models\Season;
 use App\Models\Show;
 use App\Services\AssetDownloadService;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Log;
 
 class ShowService
@@ -22,13 +26,19 @@ class ShowService
         $this->assetDownloadService = new AssetDownloadService();
     }
 
+    /**
+     * @param string $title
+     * @param string $libraryId
+     * @return \App\Models\Show|\Illuminate\Database\Eloquent\Builder|\Illuminate\Database\Eloquent\Model
+     * @throws \Adrenth\Thetvdb\Exception\RequestFailedException
+     * @throws \Adrenth\Thetvdb\Exception\UnauthorizedException
+     */
     public function findOrCreateShow(string $title, string $libraryId)
     {
         try {
             $show = Show::whereSlug(str_slug($title))->firstOrFail();
         } catch (ModelNotFoundException $exception) {
             $metadata = $this->theTvDbMetadataClient->getShow($title);
-            $metadata = $metadata->getData()->first();
 
             $show = Show::create([
                 'title'      => $metadata->getSeriesName(),
@@ -38,6 +48,9 @@ class ShowService
                 'status'     => $metadata->getStatus(),
                 'thetvdb_id' => $metadata->getId(),
                 'library_id' => $libraryId,
+                'imdb_id'    => $metadata->getImdbId(),
+                'network'    => $metadata->getNetwork(),
+                'runtime'    => $metadata->getRuntime(),
             ]);
 
             $poster = $this->theTvDbMetadataClient->getImage($metadata->getId(), 'poster');
@@ -49,6 +62,9 @@ class ShowService
                     Log::error('Could not download image!', ['exception' => $exception->getMessage()]);
                 }
             }
+
+            $genres = collect($metadata->getGenre());
+            $this->attachGenres($genres, $show);
         }
 
         return $show;
@@ -89,5 +105,18 @@ class ShowService
         }
 
         return $episode;
+    }
+
+    /**
+     * @param \Illuminate\Support\Collection $genres
+     * @param \App\Models\Show $show
+     */
+    private function attachGenres(Collection $genres, Show $show)
+    {
+        $genres->each(function (string $name) use (&$show) {
+            $genre = Genre::firstOrCreate(['name' => $name]);
+
+            $show->genres()->attach($genre);
+        });
     }
 }

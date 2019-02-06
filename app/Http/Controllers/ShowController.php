@@ -17,7 +17,7 @@ class ShowController extends Controller
     public function show(string $slug)
     {
         $show = Show::whereSlug($slug)
-            ->with(['seasons', 'seasons.episodes'])
+            ->with(['seasons', 'seasons.episodes', 'genres'])
             ->firstOrFail();
 
         ShowResource::withoutWrapping();
