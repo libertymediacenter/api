@@ -11,10 +11,4 @@
 |
 */
 
-Route::get('stream/{path}', 'StreamController@show')
-    ->name('stream');
-
-Route::get('stream/playlist/{path}', 'StreamController@getPlaylist')
-    ->name('stream-playlist');
-
 Route::get('/storage/transcode/{path}', 'StreamController@getSegment');
