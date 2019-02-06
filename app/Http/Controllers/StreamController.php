@@ -19,6 +19,11 @@ class StreamController extends Controller
         $this->hlsStream = new HlsStream();
     }
 
+    /**
+     * @param string $type
+     * @param string $slug
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function show(string $type, string $slug)
     {
         $movie = \App\Models\Movie::whereSlug($slug)->with('media')->firstOrFail();
@@ -27,57 +32,38 @@ class StreamController extends Controller
 
         return response()->json([
             'stream' => "/stream/playlist/{$streamPath}.m3u8",
-            'video' => new MovieResource($movie),
+            'video'  => new MovieResource($movie),
         ]);
     }
 
+    /**
+     * @param \Illuminate\Http\Request $request
+     * @param string $base64Path
+     * @return \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
+     */
     public function getPlaylist(Request $request, string $base64Path)
     {
         $m3u8 = $this->hlsStream->getPlaylist($base64Path, $this->seekOffset);
 
         return response($m3u8, 200, [
             'Cache-Control' => 'public',
-            'Content-Type' => 'application/x-mpegURL',
-        ]);
-    }
-
-    public function getSegment(Request $request, string $path)
-    {
-        $offset = (int)Str::before(Str::after($path, '_'), '.ts');
-
-        $audioCodec = $request->query('audioCodec', 'libfdk_aac');
-
-        try {
-            $this->getSegmentFile($path);
-        } catch (FileNotFoundException $exception) {
-
-            $ready = $this->transcodeSegment($path, $audioCodec, $offset);
-
-
-            if ($ready) {
-                sleep(1);
-            }
-        }
-
-        $segmentPath = storage_path("app/public/transcode/$path");
-
-        return response()->download($segmentPath, $path, [
-            'Cache-Control' => 'public',
+            'Content-Type'  => 'application/x-mpegURL',
         ]);
     }
 
     /**
-     * @param $path
-     * @return string
-     * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException
+     * @param \Illuminate\Http\Request $request
+     * @param string $path
+     * @return \Symfony\Component\HttpFoundation\BinaryFileResponse
      */
-    private function getSegmentFile($path)
+    public function getSegment(Request $request, string $path)
     {
-        return File::get(storage_path("app/public/transcode/$path"));
-    }
+        $audioCodec = $request->query('audioCodec', 'libfdk_aac');
 
-    private function transcodeSegment(string $path, string $audioCodec, $offset)
-    {
-        return $this->hlsStream->transcodeSegment($path, $audioCodec, $offset, $this->seekOffset);
+        $segmentPath = $this->hlsStream->getSegment($path, $this->seekOffset, $audioCodec);
+
+        return response()->download($segmentPath, $path, [
+            'Cache-Control' => 'public',
+        ]);
     }
 }

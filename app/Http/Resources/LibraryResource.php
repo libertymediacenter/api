@@ -21,6 +21,7 @@ class LibraryResource extends JsonResource
     public function toArray($request)
     {
         return [
+            'id'   => (string)$this->id,
             'name' => (string)$this->name,
             'type' => (string)$this->type,
             'lang' => (string)$this->metadata_lang,

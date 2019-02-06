@@ -2,6 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\CreateLibraryRequest;
+use App\Http\Requests\LibraryCreateRequest;
+use App\Http\Requests\LibraryUpdateRequest;
 use App\Http\Resources\LibraryResource;
 use App\Models\Library;
 use Illuminate\Http\Request;
@@ -23,45 +26,61 @@ class LibraryController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
+     * @param \App\Http\Requests\LibraryCreateRequest $request
+     * @return \App\Http\Resources\LibraryResource
      */
-    public function store(Request $request)
+    public function store(LibraryCreateRequest $request)
     {
-        //
+        $library = Library::create($request->validated());
+
+        LibraryResource::withoutWrapping();
+
+        return new LibraryResource($library);
     }
 
     /**
      * Display the specified resource.
      *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @param  string $id
+     * @return \App\Http\Resources\LibraryResource
      */
-    public function show($id)
+    public function show(string $id)
     {
-        //
+        $library = Library::whereId($id)->firstOrFail();
+
+        LibraryResource::withoutWrapping();
+
+        return new LibraryResource($library);
     }
 
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @param \App\Http\Requests\LibraryUpdateRequest $request
+     * @param  string $id
+     * @return \App\Http\Resources\LibraryResource
      */
-    public function update(Request $request, $id)
+    public function update(LibraryUpdateRequest $request, string $id)
     {
-        //
+        $library = Library::whereId($id)->firstOrFail();
+        $library->update($request->validated());
+
+        LibraryResource::withoutWrapping();
+
+        return new LibraryResource($library);
     }
 
     /**
      * Remove the specified resource from storage.
      *
-     * @param  int  $id
+     * @param string $id
      * @return \Illuminate\Http\Response
+     * @throws \Exception
      */
-    public function destroy($id)
+    public function destroy(string $id)
     {
-        //
+        $library = Library::whereId($id)->firstOrFail();
+
+        $library->delete();
     }
 }
