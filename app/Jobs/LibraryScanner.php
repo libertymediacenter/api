@@ -8,17 +8,13 @@ use App\Models\Episode;
 use App\Models\Library;
 use App\Models\MediaContainer;
 use App\Models\Movie;
-use App\Models\Season;
-use App\Models\Show;
 use App\Models\Video;
-use GuzzleHttp\Client;
+use App\Services\Libraries\ShowService;
 use Illuminate\Bus\Queueable;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
-use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 use App\Services\FFMpegService;
 use Illuminate\Support\Str;
@@ -33,6 +29,8 @@ class LibraryScanner implements ShouldQueue
     private $fileMetadataAgent;
     /** @var TheTVDBMetadataAgent */
     private $theTvDbMetadataAgent;
+    /** @var ShowService */
+    private $showService;
 
     private $videoFileExtensions = [
         'mkv',
@@ -57,6 +55,7 @@ class LibraryScanner implements ShouldQueue
         $this->filesystem = \Storage::disk('media');
         $this->fileMetadataAgent = new FileMetadataAgent();
         $this->theTvDbMetadataAgent = new TheTVDBMetadataAgent();
+        $this->showService = new ShowService();
 
         $libraries = Library::all();
 
@@ -113,29 +112,9 @@ class LibraryScanner implements ShouldQueue
 
         $showTitle = Str::before($file['filename'], '-');
 
-        try {
-            $show = Show::whereSlug(str_slug($showTitle))->firstOrFail();
-        } catch (ModelNotFoundException $exception) {
-            $data = $this->theTvDbMetadataAgent->getShow($showTitle);
-            $data = $data->getData()->first();
+        $show = $this->showService->findOrCreateShow($showTitle, $libraryId);
 
-            $show = Show::create([
-                'title'      => $data->getSeriesName(),
-                'slug'       => str_slug($data->getSlug()),
-                'summary'    => $data->getOverview(),
-                'start_year' => Carbon::parse($data->getFirstAired())->year,
-                'status'     => $data->getStatus(),
-                'thetvdb_id' => $data->getId(),
-                'library_id' => $libraryId,
-            ]);
-
-            $poster = $this->theTvDbMetadataAgent->getImage($data->getId(), 'poster');
-            if ($poster) {
-                $show->poster = $this->fetchPoster($poster, $show);
-                $show->save();
-            }
-        }
-
+        /** @var  $episodeMetadata */
         $episodeMetadata = $this->theTvDbMetadataAgent->getEpisodes($show->thetvdb_id, [
             'airedSeason'  => $season,
             'airedEpisode' => $episode,
@@ -143,32 +122,8 @@ class LibraryScanner implements ShouldQueue
 
         $seasonNo = $episodeMetadata->getAiredSeason();
 
-        try {
-            $season = Season::whereShowId($show->id)->whereSeason($seasonNo)->firstOrFail();
-        } catch (ModelNotFoundException $exception) {
-            $season = Season::create([
-                'show_id' => $show->id,
-                'season'  => $seasonNo,
-            ]);
-
-//            $poster = $this->theTvDbMetadataAgent->getImage($seasonMetadata->getId(), 'seasons');
-//            if ($poster) {
-//                $this->fetchPoster($poster, $season);
-//            }
-        }
-
-        $episode = Episode::create([
-            'season_id'  => $season->id,
-            'title'      => $episodeMetadata->getEpisodeName(),
-            'summary'    => $episodeMetadata->getOverview(),
-            'thetvdb_id' => $episodeMetadata->getId(),
-        ]);
-
-        $poster = $this->theTvDbMetadataAgent->getImage($episodeMetadata->getId(), 'episodes');
-        if ($poster) {
-            $episode->poster = $this->fetchPoster($poster, $episode);
-            $episode->save();
-        }
+        $season = $this->showService->findOrCreateSeason($show->id, $seasonNo);
+        $episode = $this->showService->findOrCreateEpisode($season, $episodeMetadata);
 
         $mediaContainer = MediaContainer::create([
             'media_id'   => $episode->id,
@@ -306,27 +261,5 @@ class LibraryScanner implements ShouldQueue
         if (\in_array($file['extension'], $this->videoFileExtensions, true)) {
             return $file;
         }
-    }
-
-    private function fetchPoster(string $url, $model)
-    {
-        $guzzle = new Client();
-
-        try {
-            $r = $guzzle->get($url);
-            $image = $r->getBody();
-        } catch (\Exception $exception) {
-            dump($exception);
-
-            return null;
-        }
-
-        $ext = \File::extension($url);
-        $type = str_slug((new \ReflectionClass($model))->getShortName());
-        $path = "assets/images/{$type}/{$model->id}.${ext}";
-
-        \Storage::disk('local')->put("public/{$path}", $image);
-
-        return $path;
     }
 }
