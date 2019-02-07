@@ -18,8 +18,6 @@ abstract class BaseModel extends Model
 
     public function __construct(array $attributes = [])
     {
-        config(['laravel-model-caching.cache-prefix' => str_slug(config('app.name') . 'model-cache')]);
-
         parent::__construct($attributes);
     }
 }

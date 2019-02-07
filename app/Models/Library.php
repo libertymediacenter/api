@@ -42,8 +42,19 @@ class Library extends BaseModel
         'path',
     ];
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
     public function movies()
     {
         return $this->hasMany(Movie::class);
+    }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function shows()
+    {
+        return $this->hasMany(Show::class);
     }
 }

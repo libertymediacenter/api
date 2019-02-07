@@ -78,6 +78,9 @@ class Movie extends BaseModel
 
     // Relations
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
     public function cast()
     {
         return $this->belongsToMany(
@@ -90,6 +93,9 @@ class Movie extends BaseModel
             ->withPivot('role');
     }
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
     public function genres()
     {
         return $this->belongsToMany(
@@ -100,16 +106,25 @@ class Movie extends BaseModel
         )->using(GenrePivot::class);
     }
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
     public function library()
     {
         return $this->belongsTo(Library::class);
     }
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\MorphOne
+     */
     public function media()
     {
         return $this->morphOne(MediaContainer::class, 'media');
     }
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
     public function ratings()
     {
         return $this->hasMany(Rating::class, 'model_id', 'id');

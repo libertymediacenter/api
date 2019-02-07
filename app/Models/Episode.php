@@ -47,11 +47,17 @@ class Episode extends BaseModel
         'imdb_id',
     ];
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\MorphToMany
+     */
     public function media()
     {
         return $this->morphToMany(MediaContainer::class, 'media');
     }
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
     public function season()
     {
         return $this->belongsTo(Season::class);

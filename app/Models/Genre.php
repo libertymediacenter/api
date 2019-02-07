@@ -25,6 +25,9 @@ class Genre extends BaseModel
         'name',
     ];
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
     public function movies()
     {
         return $this->belongsToMany(

@@ -49,16 +49,25 @@ class MediaContainer extends BaseModel
     ];
 
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
     public function audios()
     {
         return $this->hasMany(Audio::class);
     }
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
     public function videos()
     {
         return $this->hasMany(Video::class);
     }
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
     public function subtitles()
     {
         return $this->hasMany(Subtitle::class);

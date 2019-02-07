@@ -35,11 +35,17 @@ class Season extends BaseModel
         'poster',
     ];
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
     public function show()
     {
         return $this->belongsTo(Show::class);
     }
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
     public function episodes()
     {
         return $this->hasMany(Episode::class);

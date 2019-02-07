@@ -6,7 +6,8 @@ namespace App\Models;
  * App\Models\Person
  *
  * @property string $id
- * @property string $imdb_id
+ * @property string|null $imdb_id
+ * @property string|null $thetvdb_id
  * @property string $name
  * @property string|null $slug
  * @property string|null $photo
@@ -24,6 +25,7 @@ namespace App\Models;
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Person whereName($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Person wherePhoto($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Person whereSlug($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Person whereThetvdbId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Person whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\BaseModel withCacheCooldownSeconds($seconds)
  * @mixin \Eloquent
@@ -34,6 +36,7 @@ class Person extends BaseModel
 
     protected $fillable = [
         'imdb_id',
+        'thetvdb_id',
         'name',
         'slug',
         'photo',

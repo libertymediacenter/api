@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "5ebb2058622ddde6555f42cd79f722ed",
+    "content-hash": "b356674b0f74e35e8aec6cbebbf2a1c9",
     "packages": [
         {
             "name": "adrenth/thetvdb2",
@@ -60,6 +60,48 @@
                 "thetvdb.com"
             ],
             "time": "2018-10-29T18:17:41+00:00"
+        },
+        {
+            "name": "aharen/omdbapi",
+            "version": "v2.0.8",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/aharen/OMDbAPI.git",
+                "reference": "7e982afa6645439efff3e87395a7869b8b91bffa"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/aharen/OMDbAPI/zipball/7e982afa6645439efff3e87395a7869b8b91bffa",
+                "reference": "7e982afa6645439efff3e87395a7869b8b91bffa",
+                "shasum": ""
+            },
+            "require": {
+                "guzzlehttp/guzzle": "^6.2",
+                "php": ">=5.5.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "aharen\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Ahmed Khusaam",
+                    "email": "hello@khusaam.com"
+                }
+            ],
+            "description": "PHP package for OMDbAPI.com by Brian Fritz",
+            "keywords": [
+                "movies",
+                "omdb api",
+                "tv shows"
+            ],
+            "time": "2017-05-19T02:39:02+00:00"
         },
         {
             "name": "alchemy/binary-driver",

@@ -20,6 +20,7 @@ namespace App\Models;
  * @property string|null $imdb_id
  * @property string|null $network
  * @property int|null $runtime
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Person[] $cast
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Genre[] $genres
  * @property-read \App\Models\Library|null $library
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Season[] $seasons
@@ -67,16 +68,25 @@ class Show extends BaseModel
         'runtime',
     ];
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
     public function library()
     {
         return $this->belongsTo(Library::class);
     }
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
     public function seasons()
     {
         return $this->hasMany(Season::class);
     }
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
     public function genres()
     {
         return $this->belongsToMany(
@@ -85,5 +95,20 @@ class Show extends BaseModel
             'model_id',
             'genre_id'
         )->using(GenrePivot::class);
+    }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
+    public function cast()
+    {
+        return $this->belongsToMany(
+            Person::class,
+            'cast',
+            'media_id',
+            'people_id'
+        )
+            ->using(CastPivot::class)
+            ->withPivot('role');
     }
 }

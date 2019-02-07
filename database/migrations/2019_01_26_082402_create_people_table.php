@@ -16,10 +16,11 @@ class CreatePeopleTable extends Migration
         Schema::create('people', function (Blueprint $table) {
             $table->uuid('id')->primary();
 
-            $table->text('imdb_id');
+            $table->text('imdb_id')->nullable();
+            $table->text('thetvdb_id')->nullable();
 
             $table->text('name');
-            $table->text('slug')->nullable();
+            $table->text('slug')->index()->nullable();
 
             $table->text('photo')->nullable();
             $table->text('bio')->nullable();
