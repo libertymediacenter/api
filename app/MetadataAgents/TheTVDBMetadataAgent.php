@@ -2,6 +2,8 @@
 
 namespace App\MetadataAgents;
 
+use Adrenth\Thetvdb\Model\SeriesActors;
+use Adrenth\Thetvdb\Model\SeriesData;
 use App\Exceptions\NotImplementedException;
 use App\MetadataAgents\Contracts\MetadataAgentInterface;
 use App\Services\Metadata\Providers\TheTVDBProvider;
@@ -44,6 +46,19 @@ class TheTVDBMetadataAgent implements MetadataAgentInterface
         }
 
         return $res;
+    }
+
+    /**
+     * @param int $seriesId
+     * @return \Adrenth\Thetvdb\Model\SeriesActors|null
+     */
+    public function getShowActors(int $seriesId): ?SeriesActors
+    {
+        try {
+            return $this->client->series()->getActors($seriesId);
+        } catch (\Exception $exception) {
+            return null;
+        }
     }
 
     /**

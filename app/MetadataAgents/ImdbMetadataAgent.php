@@ -65,6 +65,13 @@ class ImdbMetadataAgent implements MetadataAgentInterface
         $this->setConfig($options);
     }
 
+    public function getActor(string $name, array $options = [])
+    {
+        $search = new \Imdb\PersonSearch();
+
+        return $search->search($name);
+    }
+
     private function setConfig(array $config)
     {
         //$this->config->language = 'en,en-US;q=0.9,en-GB;q=0.8,da-DK;q=0.7,da;q=0.6';
@@ -86,6 +93,7 @@ class ImdbMetadataAgent implements MetadataAgentInterface
         $movie->votes = $result->votes();
         $movie->genres = collect($result->genres());
         $movie->cast = collect($result->cast($shortCast));
+        $movie->fanart = $result->mainPictures();
 
         return $movie;
     }
