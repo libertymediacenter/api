@@ -2,9 +2,12 @@
 
 namespace App\Services\Libraries;
 
+use Adrenth\Thetvdb\Model\SeriesActorsData;
+use App\MetadataAgents\ImdbMetadataAgent;
 use App\MetadataAgents\TheTVDBMetadataAgent;
 use App\Models\Episode;
 use App\Models\Genre;
+use App\Models\Person;
 use App\Models\Season;
 use App\Models\Show;
 use App\Services\AssetDownloadService;
@@ -19,11 +22,16 @@ class ShowService
     private $theTvDbMetadataClient;
     /** @var \App\Services\AssetDownloadService */
     private $assetDownloadService;
+    /** @var \App\MetadataAgents\ImdbMetadataAgent */
+    private $imdbMetadataAgent;
 
-    public function __construct()
+    public function __construct(AssetDownloadService $assetDownloadService,
+                                TheTVDBMetadataAgent $theTvDbMetadataAgent,
+                                ImdbMetadataAgent $imdbMetadataAgent)
     {
-        $this->theTvDbMetadataClient = new TheTVDBMetadataAgent();
-        $this->assetDownloadService = new AssetDownloadService();
+        $this->assetDownloadService = $assetDownloadService;
+        $this->theTvDbMetadataClient = $theTvDbMetadataAgent;
+        $this->imdbMetadataAgent = $imdbMetadataAgent;
     }
 
     /**
@@ -65,6 +73,7 @@ class ShowService
 
             $genres = collect($metadata->getGenre());
             $this->attachGenres($genres, $show);
+            $this->addCast($show);
         }
 
         return $show;
@@ -118,5 +127,56 @@ class ShowService
 
             $show->genres()->attach($genre);
         });
+    }
+
+
+    private function addCast(Show $show): Show
+    {
+        $cast = $this->theTvDbMetadataClient->getShowActors($show->thetvdb_id);
+
+        if (!$cast) {
+            return $show;
+        }
+
+        $cast->getData()->each(function (SeriesActorsData $actorsData) use (&$show) {
+            try {
+                $person = Person::whereThetvdbId($actorsData->getId())->firstOrFail();
+            } catch (ModelNotFoundException $exception) {
+                $person = Person::create([
+                    'name'       => $actorsData->getName(),
+                    'thetvdb_id' => $actorsData->getId(),
+                ]);
+
+                try {
+                    $person->photo = $this->downloadImage($actorsData->getImage(), $person);
+                    $person->save();
+                } catch (\Exception $exception) {
+                    Log::error($exception->getMessage(), [
+                        'line' => $exception->getLine(),
+                        'file' => $exception->getFile(),
+                    ]);
+                }
+            }
+
+            if ($person->id) {
+                $show->cast()->attach($person, ['role' => $actorsData->getRole()]);
+            }
+        });
+
+        return $show;
+    }
+
+    /**
+     * @param string $path
+     * @param $model
+     * @return string|null
+     * @throws \ReflectionException
+     */
+    private function downloadImage(string $path, $model)
+    {
+        return $this->assetDownloadService->fetchImage(
+            config('metadata.providers.tvdb.image_base_url') . '/' . $path,
+            $model
+        );
     }
 }

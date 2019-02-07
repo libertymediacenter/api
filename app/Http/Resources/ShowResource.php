@@ -34,6 +34,7 @@ class ShowResource extends JsonResource
             'runtime'   => $this->runtime,
             'seasons'   => $this->whenLoaded('seasons', SeasonResource::collection($this->seasons)),
             'genres'    => $this->whenLoaded('genres', GenreResource::collection($this->genres)),
+            'cast'      => $this->whenLoaded('cast', CastResource::collection($this->cast)),
         ];
     }
 }
