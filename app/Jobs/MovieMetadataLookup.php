@@ -3,6 +3,7 @@
 namespace App\Jobs;
 
 use App\MetadataAgents\ImdbMetadataAgent;
+use App\MetadataAgents\TmdbMetadataAgent;
 use App\Models\Genre;
 use App\Models\Person;
 use App\Models\Rating;
@@ -26,6 +27,10 @@ class MovieMetadataLookup implements ShouldQueue
     private $type;
 
     private $logPrefix = self::class;
+    /** @var ImdbMetadataAgent */
+    private $imdbAgent;
+    /** @var \App\MetadataAgents\TmdbMetadataAgent */
+    private $tmdbMetadataAgent;
 
     /**
      * Create a new job instance.
@@ -44,6 +49,9 @@ class MovieMetadataLookup implements ShouldQueue
      */
     public function handle(): void
     {
+        $this->imdbAgent = resolve(ImdbMetadataAgent::class);
+        $this->tmdbMetadataAgent = resolve(TmdbMetadataAgent::class);
+
         try {
             $this->type = (new \ReflectionClass($this->model))->getShortName();
         } catch (\ReflectionException $e) {
@@ -72,7 +80,8 @@ class MovieMetadataLookup implements ShouldQueue
             $imdbResult['rating']->model_id = $this->model->id;
             $imdbResult['rating']->save();
 
-            $this->model->poster = $this->fetchPoster($imdbResult['movie']->posterUrl, $this->model);
+            $this->model->poster = $this->fetchImage($imdbResult['movie']->posterUrl, $this->model, 'poster');
+            $this->model->backdrop = $this->fetchImage($imdbResult['backdrop'], $this->model, 'backdrop');
             $this->model->save();
 
             $this->attachGenres($imdbResult['movie']->genres);
@@ -107,7 +116,7 @@ class MovieMetadataLookup implements ShouldQueue
                 ]);
 
                 if ($personData['photo']) {
-                    $person->photo = $this->fetchPoster($personData['photo'], $person);
+                    $person->photo = $this->fetchImage($personData['photo'], $person, 'person');
                     $person->save();
                 }
             }
@@ -123,9 +132,8 @@ class MovieMetadataLookup implements ShouldQueue
      */
     private function lookupImdb(): ?array
     {
-        $imdbAgent = new ImdbMetadataAgent();
         /** @var \Imdb\Title $result */
-        $result = $imdbAgent->find($this->model->title, $this->type);
+        $result = $this->imdbAgent->find($this->model->title, $this->type);
 
         if (!$result) {
             return null;
@@ -135,13 +143,17 @@ class MovieMetadataLookup implements ShouldQueue
 
         switch ($this->type) {
             case 'Movie':
-                $data = $imdbAgent->getMovie($result->imdbid());
+                $data = $this->imdbAgent->getMovie($result->imdbid());
+                $imdbId = 'tt' . $result->imdbid();
+
+                $backdrop = $this->tmdbMetadataAgent->getBackdropByImdbId($imdbId);
 
                 return [
-                    'movie'  => $data,
-                    'rating' => Rating::make([
+                    'movie'    => $data,
+                    'backdrop' => $backdrop,
+                    'rating'   => Rating::make([
                         'model_type'  => Rating::class,
-                        'provider_id' => 'tt' . $result->imdbid(),
+                        'provider_id' => $imdbId,
                         'provider'    => Rating::IMDB,
                         'score'       => $data->rating,
                         'votes'       => $data->votes,
@@ -152,7 +164,7 @@ class MovieMetadataLookup implements ShouldQueue
         }
     }
 
-    private function fetchPoster(string $url, $model)
+    private function fetchImage(string $url, $model, string $imageType)
     {
         $guzzle = new Client();
 
@@ -163,9 +175,14 @@ class MovieMetadataLookup implements ShouldQueue
             return;
         }
 
-        $ext = File::extension($url);
-        $type = str_slug((new \ReflectionClass($model))->getShortName());
-        $path = "assets/images/{$type}/{$model->id}.${ext}";
+        try {
+            $ext = File::extension($url);
+            $type = str_slug((new \ReflectionClass($model))->getShortName());
+            $path = "assets/images/{$type}/{$model->id}-{$imageType}.${ext}";
+
+        } catch (\Exception $exception) {
+            return;
+        }
 
         \Storage::disk('local')->put("public/{$path}", $image);
 
