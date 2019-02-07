@@ -21,15 +21,16 @@ class MovieResource extends JsonResource
     public function toArray($request)
     {
         return [
-            'title'   => (string)$this->title,
-            'slug'    => (string)$this->slug,
-            'year'    => (int)$this->year,
-            'runtime' => (int)$this->runtime,
-            'summary' => (string)$this->summary,
-            'poster'  => 'storage/'.$this->poster,
-            'cast'    => $this->whenLoaded('cast', CastResource::collection($this->cast)),
-            'genres'  => $this->whenLoaded('genres', GenreResource::collection($this->genres)),
-            'ratings' => $this->whenLoaded('ratings', RatingResource::collection($this->ratings))
+            'title'    => (string)$this->title,
+            'slug'     => (string)$this->slug,
+            'year'     => (int)$this->year,
+            'runtime'  => (int)$this->runtime,
+            'summary'  => (string)$this->summary,
+            'poster'   => 'storage/' . $this->poster,
+            'backdrop' => $this->backdrop,
+            'cast'     => $this->whenLoaded('cast', CastResource::collection($this->cast)),
+            'genres'   => $this->whenLoaded('genres', GenreResource::collection($this->genres)),
+            'ratings'  => $this->whenLoaded('ratings', RatingResource::collection($this->ratings)),
         ];
     }
 }

@@ -24,8 +24,8 @@ class CreateMoviesTable extends Migration
 
             $table->text('tagline')->nullable();
             $table->text('summary')->nullable();
-            $table->text('plot')->nullable();
 
+            $table->text('backdrop')->nullable();
             $table->string('poster')->nullable();
 
             $table->timestamps();

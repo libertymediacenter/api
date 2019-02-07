@@ -15,7 +15,7 @@ use Illuminate\Database\Eloquent\Builder;
  * @property int|null $runtime
  * @property string|null $tagline
  * @property string|null $summary
- * @property string|null $plot
+ * @property string|null $backdrop
  * @property string|null $poster
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
@@ -30,10 +30,10 @@ use Illuminate\Database\Eloquent\Builder;
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Movie newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Movie newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Movie query()
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Movie whereBackdrop($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Movie whereCreatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Movie whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Movie whereLibraryId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Movie wherePlot($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Movie wherePoster($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Movie whereReleased($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Movie whereRuntime($value)
@@ -56,7 +56,7 @@ class Movie extends BaseModel
         'runtime',
         'tagline',
         'summary',
-        'plot',
+        'backdrop',
         'poster',
         'library_id',
     ];
