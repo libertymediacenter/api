@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use App\Models\Library;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Storage;
 
 class SetupDevCommand extends Command
 {
@@ -38,6 +39,8 @@ class SetupDevCommand extends Command
      */
     public function handle()
     {
+        $this->cleanAssets();
+
         $this->call('migrate:fresh');
         $this->createLibraries();
 
@@ -53,8 +56,6 @@ class SetupDevCommand extends Command
             'path'          => 'movies',
         ]);
 
-        $this->output->text('Created Movie Library');
-
         $tvLibrary = Library::create([
             'name'          => 'TV',
             'type'          => Library::TV,
@@ -62,6 +63,33 @@ class SetupDevCommand extends Command
             'path'          => 'tv',
         ]);
 
-        $this->output->text('Created TV Library');
+        $this->output->note('Created libraries');
+
+        $this->output->table(['Name', 'type', 'Lang', 'path'], [
+            [$movieLibrary->name, $movieLibrary->type, $movieLibrary->metadata_lang, $movieLibrary->path],
+            [$tvLibrary->name, $tvLibrary->type, $tvLibrary->metadata_lang, $tvLibrary->path],
+        ]);
+    }
+
+    private function cleanAssets()
+    {
+        $this->output->text('Cleaning assets');
+
+        $localDisk = Storage::disk('local');
+        $directories = collect($localDisk->listContents('public/assets/images'));
+
+        $directories->each(function (array $item) use (&$localDisk) {
+            if ($item['type'] !== 'dir') {
+                return;
+            }
+
+            $files = collect($localDisk->listContents($item['path']));
+            $files = $files->map(function (array $item) {
+                return $item['path'];
+            });
+
+            $localDisk->delete($files);
+        });
+
     }
 }
