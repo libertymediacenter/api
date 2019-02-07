@@ -36,7 +36,11 @@ class TheTVDBProvider
         if ($token === null) {
             $token = $this->client
                 ->authentication()
-                ->login(config('tvdb.key'), config('tvdb.username'), config('tvdb.identifier'));
+                ->login(
+                    config('metadata.providers.tvdb.key'),
+                    config('metadata.providers.tvdb.username'),
+                    config('metadata.providers.tvdb.identifier')
+                );
         }
 
         Redis::set('metadata:provider:tvdb:token', $token);
