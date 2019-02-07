@@ -53,9 +53,9 @@ class LibraryScanner implements ShouldQueue
     public function handle(): void
     {
         $this->filesystem = \Storage::disk('media');
-        $this->fileMetadataAgent = new FileMetadataAgent();
-        $this->theTvDbMetadataAgent = new TheTVDBMetadataAgent();
-        $this->showService = new ShowService();
+        $this->fileMetadataAgent = resolve(FileMetadataAgent::class);
+        $this->theTvDbMetadataAgent = resolve(TheTVDBMetadataAgent::class);
+        $this->showService = resolve(ShowService::class);
 
         $libraries = Library::all();
 
