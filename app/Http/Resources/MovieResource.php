@@ -26,7 +26,7 @@ class MovieResource extends JsonResource
             'year'     => (int)$this->year,
             'runtime'  => (int)$this->runtime,
             'summary'  => (string)$this->summary,
-            'poster'   => 'storage/' . $this->poster,
+            'poster'   => $this->poster,
             'backdrop' => $this->backdrop,
             'cast'     => $this->whenLoaded('cast', CastResource::collection($this->cast)),
             'genres'   => $this->whenLoaded('genres', GenreResource::collection($this->genres)),
