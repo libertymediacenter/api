@@ -1,6 +1,7 @@
 import { Controller, Get, PathParams } from '@tsed/common';
 import * as fse from 'fs-extra';
 import * as sharp from 'sharp';
+import { sleep } from '../../utils/sleep';
 
 const publicDir = `${__dirname}/../../../public`;
 
@@ -33,8 +34,11 @@ export class ImageController {
         .toBuffer();
 
       await fse.writeFile(path, resized);
+
+      await sleep(200);
     }
 
+    // when the request reaches here, the server automatically serves the file.
   }
 
 }
