@@ -98,9 +98,7 @@ export class OmdbProvider implements MetadataProvider {
   private async fetch(query): Promise<MovieMetadata> {
     let res;
 
-    const apiKey = process.env.METADATA_OMDB_APIKEY;
-
-    Object.assign(query, {apiKey});
+    Object.assign(query, {apiKey: this.config.apiKey});
 
     switch (query.type) {
       case 'movie':
