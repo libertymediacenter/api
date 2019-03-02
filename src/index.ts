@@ -25,13 +25,3 @@ new Server().start()
   .catch((er) => {
     $log.error(er);
   });
-
-process.on('SIGTERM', () => {
-  $log.info('Shutting down...');
-
-  (async () => {
-    await $log.shutdown();
-
-
-  })();
-});
