@@ -25,11 +25,11 @@ export interface PosterApiConfig {
 @Service()
 export class OmdbProvider implements MetadataProvider {
   protected config: OmdbProviderConfig = {
-    baseUrl: 'https://www.omdbapi.com/',
-    apiKey: process.env.METADATA_OMDB_APIKEY,
+    baseUrl: process.env.METADATA_OMDB_API_URL,
+    apiKey: process.env.METADATA_OMDB_API_KEY,
     posterApi: {
-      baseUrl: 'https://img.omdbapi.com/',
-      height: 600,
+      baseUrl: process.env.METADATA_OMDB_POSTER_URL,
+      height: Number(process.env.METADATA_OMDB_POSTER_SIZE),
     },
   };
 
