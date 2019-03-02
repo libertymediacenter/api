@@ -1,0 +1,34 @@
+version: '2'
+
+services:
+  redis:
+    image: redis:5-alpine
+    container_name: liberty-redis
+    ports:
+      - 6350:6379
+    networks:
+      - liberty-net
+
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    ports:
+      - 8081:80
+    environment:
+      PGADMIN_DEFAULT_EMAIL: code@juul.xyz
+      PGADMIN_DEFAULT_PASSWORD: martin123
+    networks:
+      - liberty-net
+
+  postgres:
+    image: postgres:11-alpine
+    container_name: liberty-postgres
+    environment:
+      POSTGRES_USER: liberty
+      POSTGRES_PASSWORD: secret
+    ports:
+      - 5450:5432
+    networks:
+      - liberty-net
+
+networks:
+  liberty-net:
