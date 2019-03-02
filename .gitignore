@@ -56,4 +56,3 @@ test/**/*.js.map
 # Project
 .env
 dist
-public/**/*.jpeg
