@@ -24,7 +24,7 @@ export class MovieService implements AfterRoutesInit {
     this._movieRepo = this._connection.manager.getRepository(MovieEntity);
   }
 
-  public async paginate(opts?: PaginationOptions) {
+  public async paginate(opts?: PaginationOptions): Promise<{ data: MovieEntity[]; count: number }> {
     const take = opts.take || 30;
     const skip = opts.skip || 0;
     const keyword = opts.keyword || '';

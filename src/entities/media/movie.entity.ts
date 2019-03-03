@@ -4,7 +4,6 @@ import {
   CreateDateColumn,
   Entity,
   JoinColumn, JoinTable, ManyToMany, ManyToOne,
-  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
@@ -12,6 +11,7 @@ import { LibraryEntity } from '../library.entity';
 import { IgnoreProperty, Property } from '@tsed/common';
 import { IMovie } from '../../interfaces/media';
 import { GenreEntity } from '../genre.entity';
+import { PersonEntity } from '../person.entity';
 
 @Entity({name: 'movies'})
 export class MovieEntity implements IMovie {
@@ -19,13 +19,13 @@ export class MovieEntity implements IMovie {
   @IgnoreProperty()
   uuid: string;
 
-  @Column('text')
+  @Column('citext')
   @Property()
   title: string;
 
-  @Column('text')
+  @Column('citext', {nullable: false})
   @Property()
-  slug: string;
+  slug?: string;
 
   @Column({nullable: true})
   @Property()
@@ -53,7 +53,7 @@ export class MovieEntity implements IMovie {
 
   @Column('text', {unique: true})
   @Property()
-  @Description('Path to the directory containing the movie')
+  @Description('Absolute path to the directory containing the movie')
   path: string;
 
   @Column('text', {nullable: true})
@@ -76,7 +76,11 @@ export class MovieEntity implements IMovie {
   @JoinTable({name: 'movie_genre'})
   genres?: GenreEntity[];
 
-  @OneToMany(type => LibraryEntity, library => library.movies)
-  @JoinColumn({name: 'library_id'})
+  @ManyToMany(type => PersonEntity)
+  @JoinTable({name: 'movie_person'})
+  persons?: PersonEntity[];
+
+  @ManyToOne(type => LibraryEntity, library => library.movies)
+  @JoinColumn({name: 'library_uuid', referencedColumnName: 'uuid'})
   library?: LibraryEntity;
 }

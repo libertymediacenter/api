@@ -1,5 +1,12 @@
 import { JsonProperty, Property, Required, Schema } from '@tsed/common';
-import { Column, CreateDateColumn, Entity, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  OneToMany,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
+} from 'typeorm';
 import { ILibrary } from '../interfaces/library';
 import { MovieEntity } from './media/movie.entity';
 import { SeriesEntity } from './media/tv/series.entity';
@@ -20,12 +27,12 @@ export class LibraryEntity implements ILibrary {
   @JsonProperty()
   uuid: string;
 
-  @Column('text')
+  @Column('citext')
   @Property()
   @Required()
   title: string;
 
-  @Column('text')
+  @Column('citext')
   @Property()
   slug: string;
 
@@ -52,9 +59,9 @@ export class LibraryEntity implements ILibrary {
 
   /* Relations */
 
-  @ManyToOne(type => MovieEntity, movie => movie.library)
+  @OneToMany(type => MovieEntity, movieEntity => movieEntity.library)
   movies: MovieEntity[];
 
-  @ManyToOne(type => SeriesEntity, series => series.library)
+  @OneToMany(type => SeriesEntity, seriesEntity => seriesEntity.library)
   series: SeriesEntity[];
 }

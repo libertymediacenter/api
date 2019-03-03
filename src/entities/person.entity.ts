@@ -1,5 +1,15 @@
 import { Property, Required, Schema } from '@tsed/common';
-import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  ManyToMany,
+  OneToMany,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
+} from 'typeorm';
+import { MovieEntity } from './media/movie.entity';
+import { MovieCastEntity } from './media/movie-cast.entity';
 
 @Schema({title: 'person'})
 @Entity({name: 'persons'})
@@ -28,4 +38,9 @@ export class PersonEntity {
 
   @UpdateDateColumn({name: 'updated_at', type: 'timestamptz'})
   updatedAt: Date;
+
+  /* Relations */
+
+  @OneToMany(type => MovieCastEntity, movieCastEntity => movieCastEntity.person)
+  movieRoles: MovieCastEntity[];
 }

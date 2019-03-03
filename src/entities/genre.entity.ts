@@ -10,7 +10,7 @@ export class GenreEntity {
   @PrimaryGeneratedColumn('uuid')
   uuid: string;
 
-  @Column()
+  @Column('citext')
   @JsonProperty()
   @Required()
   name: string;
@@ -24,11 +24,11 @@ export class GenreEntity {
   /* Relations */
 
   @ManyToMany(type => MovieEntity)
-  movies: MovieEntity[];
+  movies?: MovieEntity[];
 
   @ManyToMany(type => SeriesEntity)
-  series: SeriesEntity[];
+  series?: SeriesEntity[];
 
   @ManyToMany(type => EbookEntity)
-  ebooks: EbookEntity[];
+  ebooks?: EbookEntity[];
 }

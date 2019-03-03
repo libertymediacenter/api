@@ -64,7 +64,12 @@ export class MetadataService implements OnInit {
       }
     }
 
-    let movie: MovieMetadata = {} as MovieMetadata;
+    // Set default
+    let movie: MovieMetadata = {
+      title: regexTitle.title,
+      year: regexTitle.year,
+    };
+
     results.map(x => this.mergeMetadata(movie, x));
 
     return movie;

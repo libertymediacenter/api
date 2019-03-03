@@ -13,6 +13,10 @@ export interface MetadataProvider {
   getByTitle(title: string, options: MetadataOptions): Promise<MovieMetadata>;
 }
 
+export interface PersonDataProvider {
+
+}
+
 export interface ImageProviderOptions extends MetadataOptions {
 
 }

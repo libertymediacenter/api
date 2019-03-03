@@ -55,6 +55,6 @@ export class EpisodeEntity {
   /* Relations */
 
   @OneToMany(type => SeasonEntity, season => season.episodes)
-  @JoinColumn({name: 'season_id'})
+  @JoinColumn({name: 'season_uuid', referencedColumnName: 'uuid'})
   season: SeasonEntity;
 }
