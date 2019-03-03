@@ -74,7 +74,7 @@ export class MovieEntity implements IMovie {
   /* Relations */
 
   @ManyToMany(type => GenreEntity, {eager: true})
-  @JoinTable({name: 'movie_genre'})
+  @JoinTable({name: 'movie_genre', joinColumn: {name: 'movie_uuid'}, inverseJoinColumn: {name: 'genre_uuid'}})
   @Property({name: 'genres', use: GenreEntity})
   genres: GenreEntity[];
 
