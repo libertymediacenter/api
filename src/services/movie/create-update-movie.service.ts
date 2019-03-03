@@ -16,6 +16,7 @@ import { getMimeType } from '../metadata/providers/fetch-stream';
 import { ImageRequest, ImageType } from '../metadata/providers/provider.interface';
 import { TmdbProvider } from '../metadata/providers/tmdb/tmdb.provider';
 import { PersonService } from '../person.service';
+import * as _ from 'lodash';
 
 @Service()
 export class CreateUpdateMovieService implements AfterRoutesInit {
@@ -191,12 +192,16 @@ export class CreateUpdateMovieService implements AfterRoutesInit {
   }
 
   private async attachGenres(genres: string[], movieEntity: MovieEntity) {
-    const findOrCreate: Promise<GenreEntity>[] = genres.map(async (genre) => {
+    const uniqueGenres = _.uniq(genres);
+
+    const findOrCreate: Promise<GenreEntity>[] = uniqueGenres.map(async (genre) => {
+      const lowerGenre = genre.toLowerCase();
+
       try {
-        return await this._genreRepo.findOneOrFail({where: {name: genre}});
+        return await this._genreRepo.findOneOrFail({where: {name: lowerGenre}});
       } catch (e) {
         const entity = this._genreRepo.create();
-        entity.name = genre;
+        entity.name = lowerGenre;
 
         return await this._genreRepo.save(entity);
       }
