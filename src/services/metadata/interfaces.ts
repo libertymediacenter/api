@@ -1,5 +1,6 @@
+import { AxiosRequestConfig } from 'axios';
 import { Stream } from 'stream';
-import { IMovie } from '../../interfaces/media';
+import { IMovie, IPerson } from '../../interfaces/media';
 import { Image, ImageRequest } from './providers/provider.interface';
 
 export interface ImageStream {
@@ -12,16 +13,12 @@ export interface MovieMetadata extends IMovie {
   genres?: string[];
 }
 
-export interface PersonMetadata {
-  name: string;
-  bio: string;
-  imdbId?: string;
-  tmdbId?: string;
-  photoUrl?: string;
-}
-
 export interface CastMetadata {
   tmdbId: number;
   role: string;
   order: number;
+}
+
+export interface PersonMetadata extends IPerson {
+  imageRequest?: AxiosRequestConfig;
 }

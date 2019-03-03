@@ -81,8 +81,8 @@ export class TmdbProvider implements MetadataProvider, PersonDataProvider {
     return cast;
   }
 
-  public async getPerson(id: number): Promise<IPerson> {
-    let person;
+  public async getPerson(id: number): Promise<PersonMetadata> {
+    let person: PersonDetailsResponse;
 
     try {
       person = await this.get<PersonDetailsResponse>(`/person/${id}`);
@@ -101,6 +101,7 @@ export class TmdbProvider implements MetadataProvider, PersonDataProvider {
       bio: person.biography,
       imdbId: person.imdb_id,
       tmdbId: person.id,
+      imageRequest: this.getImage(person.profile_path),
     };
   }
 

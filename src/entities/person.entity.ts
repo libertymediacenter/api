@@ -38,6 +38,9 @@ export class PersonEntity implements IPerson {
   @Column('bigint', {name: 'tmdb_id', nullable: true})
   tmdbId: number;
 
+  @Column('text', {nullable: true})
+  image: string;
+
   @CreateDateColumn({name: 'created_at', type: 'timestamptz'})
   createdAt: Date;
 
