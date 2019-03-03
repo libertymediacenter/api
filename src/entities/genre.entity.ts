@@ -14,7 +14,7 @@ export class GenreEntity {
   @PrimaryGeneratedColumn('uuid')
   uuid: string;
 
-  @Column('citext')
+  @Column('citext', {unique: true})
   @JsonProperty()
   @Required()
   name: string;
