@@ -3,26 +3,25 @@ import {
   Column,
   CreateDateColumn,
   Entity,
-  ManyToMany,
   OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { MovieEntity } from './media/movie.entity';
+import { IPerson } from '../interfaces/media';
 import { MovieCastEntity } from './media/movie-cast.entity';
 
 @Schema({title: 'person'})
 @Entity({name: 'persons'})
-export class PersonEntity {
+export class PersonEntity implements IPerson {
   @PrimaryGeneratedColumn('uuid')
   uuid: string;
 
-  @Column()
+  @Column('citext')
   @Property()
   @Required()
   name: string;
 
-  @Column('text', {unique: true})
+  @Column('citext', {unique: true})
   slug: string;
 
   @Column('text', {nullable: true})
@@ -32,6 +31,12 @@ export class PersonEntity {
   @Column('text', {nullable: true})
   @Property()
   bio: string;
+
+  @Column('text', {name: 'imdb_id', nullable: true})
+  imdbId: string;
+
+  @Column('bigint', {name: 'tmdb_id', nullable: true})
+  tmdbId: number;
 
   @CreateDateColumn({name: 'created_at', type: 'timestamptz'})
   createdAt: Date;

@@ -1,21 +1,22 @@
 import { Service } from '@tsed/di';
 import { AxiosRequestConfig } from 'axios';
 import { $log } from 'ts-log-debug';
-import { IEpisode, ISeries } from '../../../../interfaces/media';
-import { MovieMetadata } from '../../interfaces';
+import { IEpisode, IPerson, ISeries } from '../../../../interfaces/media';
+import { sleep } from '../../../../utils/sleep';
+import { CastMetadata, MovieMetadata, PersonMetadata } from '../../interfaces';
 import { generateImageStreamRequest } from '../fetch-stream';
 import {
   ImageType,
   MetadataOptions,
-  MetadataProvider,
+  MetadataProvider, PersonDataProvider,
 } from '../provider.interface';
-import { Configuration, Movie, SearchResult } from './responses';
+import { Cast, Configuration, Movie, MovieCreditsResponse, PersonDetailsResponse, SearchResult } from './responses';
 import { serializeMovie } from './serializers';
 import * as got from 'got';
 import * as queryString from 'querystring';
 
 @Service()
-export class TmdbProvider implements MetadataProvider {
+export class TmdbProvider implements MetadataProvider, PersonDataProvider {
   private readonly _baseUrl: string;
   private readonly _key: string;
   private _tmdbConf: Configuration;
@@ -62,6 +63,45 @@ export class TmdbProvider implements MetadataProvider {
     }
 
     return item;
+  }
+
+  public async getMovieCastByTmdbId(id: number): Promise<CastMetadata[]> {
+    const credits = await this.get<MovieCreditsResponse>(`/movie/${id}/credits`);
+
+    const cast = credits.cast.map((cast) => {
+      if (cast.order < 6) {
+        return {
+          tmdbId: cast.id,
+          role: cast.character,
+          order: cast.order,
+        };
+      }
+    }).filter(x => x);
+
+    return cast;
+  }
+
+  public async getPerson(id: number): Promise<IPerson> {
+    let person;
+
+    try {
+      person = await this.get<PersonDetailsResponse>(`/person/${id}`);
+    } catch (e) {
+      if (e.statusCode === 429) {
+        await sleep(200);
+
+        person = await this.get<PersonDetailsResponse>(`/person/${id}`);
+
+        return null;
+      }
+    }
+
+    return {
+      name: person.name,
+      bio: person.biography,
+      imdbId: person.imdb_id,
+      tmdbId: person.id,
+    };
   }
 
   private getImage(path: string, quality = 'original'): AxiosRequestConfig {

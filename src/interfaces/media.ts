@@ -55,3 +55,11 @@ export interface IEpisode {
   imdbId?: string;
   ratings?: IRating[];
 }
+
+export interface IPerson {
+  name: string;
+  photo?: string;
+  bio?: string;
+  imdbId?: string;
+  tmdbId?: number;
+}

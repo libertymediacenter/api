@@ -1,6 +1,6 @@
 import { AxiosRequestConfig } from 'axios';
-import { IEpisode, IMovie, ISeries } from '../../../interfaces/media';
-import { ImageStream, MovieMetadata } from '../interfaces';
+import { IEpisode, IMovie, IPerson, ISeries } from '../../../interfaces/media';
+import { CastMetadata, ImageStream, MovieMetadata } from '../interfaces';
 
 export interface MetadataOptions {
   type: 'movie' | 'series' | 'episode';
@@ -14,7 +14,9 @@ export interface MetadataProvider {
 }
 
 export interface PersonDataProvider {
+  getPerson(id: number): Promise<IPerson>;
 
+  getMovieCastByTmdbId(id: number): Promise<CastMetadata[]>;
 }
 
 export interface ImageProviderOptions extends MetadataOptions {

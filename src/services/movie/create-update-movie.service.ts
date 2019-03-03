@@ -7,12 +7,15 @@ import { $log } from 'ts-log-debug';
 import { Connection, Repository } from 'typeorm';
 import { GenreEntity } from '../../entities/genre.entity';
 import { LibraryEntity } from '../../entities/library.entity';
+import { MovieCastEntity } from '../../entities/media/movie-cast.entity';
 import { MovieEntity } from '../../entities/media/movie.entity';
 import { StorageDir, streamToFile } from '../../utils/storage.utils';
 import { LibraryScanResult } from '../library-scanner.service';
 import { MovieMetadata } from '../metadata/interfaces';
 import { getMimeType } from '../metadata/providers/fetch-stream';
 import { ImageRequest, ImageType } from '../metadata/providers/provider.interface';
+import { TmdbProvider } from '../metadata/providers/tmdb/tmdb.provider';
+import { PersonService } from '../person.service';
 
 @Service()
 export class CreateUpdateMovieService implements AfterRoutesInit {
@@ -20,15 +23,19 @@ export class CreateUpdateMovieService implements AfterRoutesInit {
 
   private _connection: Connection;
   private _movieRepo: Repository<MovieEntity>;
+  private _movieCastRepo: Repository<MovieCastEntity>;
   private _genreRepo: Repository<GenreEntity>;
 
-  constructor(private _typeOrmService: TypeORMService) {
+  constructor(private _typeOrmService: TypeORMService,
+              private _tmdbProvider: TmdbProvider,
+              private _personService: PersonService) {
   }
 
   public $afterRoutesInit(): void | Promise<any> {
     this._connection = this._typeOrmService.get();
 
     this._movieRepo = this._connection.manager.getRepository(MovieEntity);
+    this._movieCastRepo = this._connection.manager.getRepository(MovieCastEntity);
     this._genreRepo = this._connection.manager.getRepository(GenreEntity);
   }
 
@@ -57,6 +64,46 @@ export class CreateUpdateMovieService implements AfterRoutesInit {
         }
       }
     }
+
+    if (movieEntity.theMovieDbId) {
+      movieEntity = await this.attachCast(movieEntity);
+
+      await this._movieRepo.save(movieEntity);
+    }
+
+
+    return movieEntity;
+  }
+
+  private async attachCast(movieEntity: MovieEntity) {
+    const cast = await this._tmdbProvider.getMovieCastByTmdbId(movieEntity.theMovieDbId);
+
+    if (!movieEntity.cast) {
+      movieEntity.cast = [];
+    }
+
+    for (const role of cast) {
+      if (!role.tmdbId) {
+        continue;
+      }
+
+      const person = await this._personService.findOrCreateByTmdbId(role.tmdbId);
+
+      let movieCastEntity = new MovieCastEntity();
+
+      try {
+        movieCastEntity = await this._movieCastRepo.findOneOrFail({where: {role: role.role, person}});
+      } catch (e) {
+        movieCastEntity.role = role.role;
+        movieCastEntity.order = role.order;
+        movieCastEntity.person = person;
+        movieCastEntity.movie = movieEntity;
+      }
+
+      movieEntity.cast.push(movieCastEntity);
+    }
+
+    await this._movieCastRepo.save(movieEntity.cast);
 
     return movieEntity;
   }

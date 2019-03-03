@@ -11,3 +11,17 @@ export interface MovieMetadata extends IMovie {
   images?: ImageRequest[];
   genres?: string[];
 }
+
+export interface PersonMetadata {
+  name: string;
+  bio: string;
+  imdbId?: string;
+  tmdbId?: string;
+  photoUrl?: string;
+}
+
+export interface CastMetadata {
+  tmdbId: number;
+  role: string;
+  order: number;
+}

@@ -17,6 +17,9 @@ export class MovieCastEntity {
   @Column('citext')
   role: string;
 
+  @Column('int')
+  order: number;
+
   @ManyToOne(type => MovieEntity)
   movie: MovieEntity;
 

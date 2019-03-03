@@ -5,7 +5,11 @@ import { SeriesEntity } from './media/tv/series.entity';
 import { EbookEntity } from './media/book/ebook.entity';
 
 @Schema({title: 'genre'})
-@Entity({name: 'genres'})
+@Entity({
+  name: 'genres', orderBy: {
+    name: 'ASC',
+  },
+})
 export class GenreEntity {
   @PrimaryGeneratedColumn('uuid')
   uuid: string;

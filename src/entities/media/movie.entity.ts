@@ -12,6 +12,7 @@ import { IgnoreProperty, Property } from '@tsed/common';
 import { IMovie } from '../../interfaces/media';
 import { GenreEntity } from '../genre.entity';
 import { PersonEntity } from '../person.entity';
+import { MovieCastEntity } from './movie-cast.entity';
 
 @Entity({name: 'movies'})
 export class MovieEntity implements IMovie {
@@ -72,13 +73,14 @@ export class MovieEntity implements IMovie {
 
   /* Relations */
 
-  @ManyToMany(type => GenreEntity)
+  @ManyToMany(type => GenreEntity, {eager: true})
   @JoinTable({name: 'movie_genre'})
-  genres?: GenreEntity[];
+  @Property({name: 'genres', use: GenreEntity})
+  genres: GenreEntity[];
 
-  @ManyToMany(type => PersonEntity)
-  @JoinTable({name: 'movie_person'})
-  persons?: PersonEntity[];
+  @ManyToOne(type => MovieCastEntity, {eager: true})
+  @Property({name: 'cast', use: MovieCastEntity})
+  cast: MovieCastEntity[];
 
   @ManyToOne(type => LibraryEntity, library => library.movies)
   @JoinColumn({name: 'library_uuid', referencedColumnName: 'uuid'})

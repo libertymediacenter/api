@@ -92,3 +92,47 @@ export interface Configuration {
   images: ImageConfig;
   change_keys: string[];
 }
+
+export interface Cast {
+  cast_id: number;
+  character: string;
+  credit_id: string;
+  gender: number;
+  id: number;
+  name: string;
+  order: number;
+  profile_path: string;
+}
+
+export interface Crew {
+  credit_id: string;
+  department: string;
+  gender: number;
+  id: number;
+  job: string;
+  name: string;
+  profile_path: string;
+}
+
+export interface MovieCreditsResponse {
+  id: number;
+  cast: Cast[];
+  crew: Crew[];
+}
+
+export interface PersonDetailsResponse {
+  birthday: string;
+  known_for_department: string;
+  deathday?: any;
+  id: number;
+  name: string;
+  also_known_as: string[];
+  gender: number;
+  biography: string;
+  popularity: number;
+  place_of_birth: string;
+  profile_path: string;
+  adult: boolean;
+  imdb_id: string;
+  homepage: string;
+}
