@@ -56,3 +56,5 @@ test/**/*.js.map
 # Project
 .env
 dist
+/public/**/*.m3u8
+/public/**/*.ts

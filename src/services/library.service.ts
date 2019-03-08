@@ -3,11 +3,12 @@ import { Service } from '@tsed/di';
 import { TypeORMService } from '@tsed/typeorm';
 import { Connection, Repository } from 'typeorm';
 import { LibraryEntity, LibraryType } from '../entities/library.entity';
-import { MovieEntity } from '../entities/media/movie.entity';
+import { MovieEntity } from '../entities/media/movie/movie.entity';
 import { EpisodeEntity } from '../entities/media/tv/episode.entity';
 import { SeriesEntity } from '../entities/media/tv/series.entity';
 import { LibraryScanResult } from './library-scanner.service';
 import { CreateUpdateMovieService } from './movie/create-update-movie.service';
+import { CreateUpdateSeriesService } from './tv/create-update-series.service';
 
 @Service()
 export class LibraryService implements AfterRoutesInit {
@@ -16,7 +17,8 @@ export class LibraryService implements AfterRoutesInit {
   private _libraryRepo: Repository<LibraryEntity>;
 
   constructor(private typeOrmService: TypeORMService,
-              private createUpdateMovieService: CreateUpdateMovieService) {
+              private createUpdateMovieService: CreateUpdateMovieService,
+              private createUpdateSeriesService: CreateUpdateSeriesService) {
   }
 
   public $afterRoutesInit(): void | Promise<any> {
@@ -47,7 +49,10 @@ export class LibraryService implements AfterRoutesInit {
   public async addItem(library: LibraryEntity, data: LibraryScanResult): Promise<MovieEntity | SeriesEntity | EpisodeEntity> {
     switch (library.type) {
       case LibraryType.Movie:
-        return await this.createUpdateMovieService.handle(data, library);
+        return this.createUpdateMovieService.handle(data, library);
+
+      case LibraryType.Series:
+        return this.createUpdateSeriesService.handle(data, library);
       default:
         throw new Error('Library type unknown!');
     }

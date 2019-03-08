@@ -2,13 +2,13 @@ import { JsonProperty, Property, Required, Schema } from '@tsed/common';
 import {
   Column,
   CreateDateColumn,
-  Entity,
+  Entity, Index,
   OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
 import { ILibrary } from '../interfaces/library';
-import { MovieEntity } from './media/movie.entity';
+import { MovieEntity } from './media/movie/movie.entity';
 import { SeriesEntity } from './media/tv/series.entity';
 
 export enum LibraryType {
@@ -22,6 +22,7 @@ export enum LibraryType {
 
 @Schema({title: 'library'})
 @Entity({name: 'libraries'})
+@Index('library_slug_type_key', ['slug', 'type'], {unique: true})
 export class LibraryEntity implements ILibrary {
   @PrimaryGeneratedColumn('uuid', {name: 'uuid'})
   @JsonProperty()

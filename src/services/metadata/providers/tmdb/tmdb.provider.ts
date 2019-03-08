@@ -1,6 +1,7 @@
 import { Service } from '@tsed/di';
 import { AxiosRequestConfig } from 'axios';
 import { $log } from 'ts-log-debug';
+import { LibraryType } from '../../../../entities/library.entity';
 import { IEpisode, IPerson, ISeries } from '../../../../interfaces/media';
 import { sleep } from '../../../../utils/sleep';
 import { CastMetadata, MovieMetadata, PersonMetadata } from '../../interfaces';
@@ -10,8 +11,8 @@ import {
   MetadataOptions,
   MetadataProvider, PersonDataProvider,
 } from '../provider.interface';
-import { Cast, Configuration, Movie, MovieCreditsResponse, PersonDetailsResponse, SearchResult } from './responses';
-import { serializeMovie } from './serializers';
+import { Cast, Configuration, Movie, MovieCreditsResponse, PersonDetailsResponse, SearchResult, TV } from './responses';
+import { serializeMovie, serializeSeries } from './serializers';
 import * as got from 'got';
 import * as queryString from 'querystring';
 
@@ -36,7 +37,15 @@ export class TmdbProvider implements MetadataProvider, PersonDataProvider {
       return null;
     }
 
-    const item = serializeMovie(res);
+    let item;
+
+    if (options.type === 'movie') {
+      item = serializeMovie(res as Movie);
+    }
+
+    if (options.type === 'series') {
+      item = serializeSeries(res as TV);
+    }
 
     if (options.fetchBackdrop && res.backdrop_path) {
       try {
@@ -114,27 +123,43 @@ export class TmdbProvider implements MetadataProvider, PersonDataProvider {
     return generateImageStreamRequest(config);
   }
 
-  private async findByTitle(title: string, options: MetadataOptions): Promise<Movie> {
-    let endpoint, search;
+  private async findByTitle(title: string, options: MetadataOptions): Promise<Movie | TV> {
+    let endpoint, query;
     const language = 'en-US';
 
     const year = options.year;
 
-    endpoint = '/movie';
-    search = this.get<SearchResult<Movie[]>>('/search/movie', {
-      language,
-      query: title,
-      year,
-    });
+    const getItem = async <T>(query) => {
+      try {
+        const searchResult = await query;
 
-    try {
-      const searchResult = await search;
-
-      if (searchResult.results.length > 0) {
-        return this.get<Movie>(`${endpoint}/${searchResult.results[0].id}`);
+        if (searchResult.results.length > 0) {
+          return this.get<T>(`${endpoint}/${searchResult.results[0].id}`);
+        }
+      } catch (e) {
+        $log.error(e);
       }
-    } catch (e) {
-      $log.error(e);
+    };
+
+    if (options.type === LibraryType.Movie) {
+      endpoint = '/movie';
+      query = await this.get<SearchResult<Movie[]>>('/search/movie', {
+        language,
+        query: title,
+        year,
+      });
+
+      return getItem<Movie>(query);
+    }
+
+    if (options.type === LibraryType.Series) {
+      endpoint = '/tv';
+      query = await this.get<SearchResult<TV[]>>('/search/tv', {
+        language,
+        query: title,
+      });
+
+      return getItem<TV>(query);
     }
   }
 

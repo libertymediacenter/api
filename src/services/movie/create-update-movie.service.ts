@@ -2,21 +2,23 @@ import { AfterRoutesInit } from '@tsed/common';
 import { Service } from '@tsed/di';
 import { TypeORMService } from '@tsed/typeorm';
 import { AxiosError, AxiosRequestConfig } from 'axios';
+import * as _ from 'lodash';
 import { extension } from 'mime-types';
 import { $log } from 'ts-log-debug';
 import { Connection, Repository } from 'typeorm';
 import { GenreEntity } from '../../entities/genre.entity';
 import { LibraryEntity } from '../../entities/library.entity';
-import { MovieCastEntity } from '../../entities/media/movie-cast.entity';
-import { MovieEntity } from '../../entities/media/movie.entity';
+import { MovieCastEntity } from '../../entities/media/movie/movie-cast.entity';
+import { MovieCollectionEntity } from '../../entities/media/movie/movie-collection.entity';
+import { MovieEntity } from '../../entities/media/movie/movie.entity';
 import { StorageDir, streamToFile } from '../../utils/storage.utils';
 import { LibraryScanResult } from '../library-scanner.service';
 import { MovieMetadata } from '../metadata/interfaces';
 import { getMimeType } from '../metadata/providers/fetch-stream';
 import { ImageRequest, ImageType } from '../metadata/providers/provider.interface';
+import { BelongsToCollection } from '../metadata/providers/tmdb/responses';
 import { TmdbProvider } from '../metadata/providers/tmdb/tmdb.provider';
 import { PersonService } from '../person.service';
-import * as _ from 'lodash';
 
 @Service()
 export class CreateUpdateMovieService implements AfterRoutesInit {
@@ -25,6 +27,7 @@ export class CreateUpdateMovieService implements AfterRoutesInit {
   private _connection: Connection;
   private _movieRepo: Repository<MovieEntity>;
   private _movieCastRepo: Repository<MovieCastEntity>;
+  private _movieCollectionRepo: Repository<MovieCollectionEntity>;
   private _genreRepo: Repository<GenreEntity>;
 
   constructor(private _typeOrmService: TypeORMService,
@@ -37,12 +40,13 @@ export class CreateUpdateMovieService implements AfterRoutesInit {
 
     this._movieRepo = this._connection.manager.getRepository(MovieEntity);
     this._movieCastRepo = this._connection.manager.getRepository(MovieCastEntity);
+    this._movieCollectionRepo = this._connection.manager.getRepository(MovieCollectionEntity);
     this._genreRepo = this._connection.manager.getRepository(GenreEntity);
   }
 
   public async handle(data: LibraryScanResult, library: LibraryEntity) {
     const metadata: MovieMetadata = data.metadata;
-    let movieEntity = await this.getMovieByPath(data.dir.path);
+    let movieEntity = await this.findOrCreateMovieByPath(data.dir.path);
 
     movieEntity = this.mapProperties(movieEntity, metadata, data.dir.path, library);
     movieEntity = await this._movieRepo.save(movieEntity);
@@ -72,8 +76,37 @@ export class CreateUpdateMovieService implements AfterRoutesInit {
       await this._movieRepo.save(movieEntity);
     }
 
+    if (data.metadata.tmdbCollection && data.metadata.tmdbCollection.id) {
+      movieEntity.collection = await this.findOrCreateCollection(movieEntity, data.metadata.tmdbCollection);
+
+      movieEntity = await this._movieRepo.save(movieEntity);
+    }
+
 
     return movieEntity;
+  }
+
+  private async findOrCreateCollection(movieEntity: MovieEntity, collection: BelongsToCollection) {
+    let collectionEntity: MovieCollectionEntity;
+
+    try {
+      collectionEntity = await this._movieCollectionRepo.findOneOrFail({
+        where: {
+          tmdbId: collection.id,
+          library: movieEntity.library,
+        },
+      });
+    } catch (e) {
+      const entity = this._movieCollectionRepo.create();
+
+      entity.name = collection.name;
+      entity.tmdbId = collection.id;
+      entity.library = movieEntity.library;
+
+      collectionEntity = await this._movieCollectionRepo.save(entity);
+    }
+
+    return collectionEntity;
   }
 
   private async attachCast(movieEntity: MovieEntity) {
@@ -123,7 +156,7 @@ export class CreateUpdateMovieService implements AfterRoutesInit {
     return movieEntity;
   }
 
-  private async getMovieByPath(path: string): Promise<MovieEntity> {
+  private async findOrCreateMovieByPath(path: string): Promise<MovieEntity> {
     let movieEntity;
 
     try {
@@ -192,22 +225,29 @@ export class CreateUpdateMovieService implements AfterRoutesInit {
   }
 
   private async attachGenres(genres: string[], movieEntity: MovieEntity) {
-    const uniqueGenres = _.uniq(genres);
+    const normalized = genres.map((genre) => genre.toLowerCase().trim());
+    const uniqueGenres = _.uniq<string>(normalized); // TODO: This is not working. Try Set()
 
-    const findOrCreate: Promise<GenreEntity>[] = uniqueGenres.map(async (genre) => {
-      const lowerGenre = genre.toLowerCase();
+    const genreEntities: GenreEntity[] = [];
+
+    for (const genre of uniqueGenres) {
+      let genreEntity: GenreEntity;
 
       try {
-        return await this._genreRepo.findOneOrFail({where: {name: lowerGenre}});
+        genreEntity = await this._genreRepo.findOneOrFail({where: {name: genre}});
       } catch (e) {
         const entity = this._genreRepo.create();
-        entity.name = lowerGenre;
+        entity.name = genre;
 
-        return await this._genreRepo.save(entity);
+        genreEntity = await this._genreRepo.save(entity);
       }
-    });
 
-    movieEntity.genres = await Promise.all(findOrCreate);
+      genreEntities.push(genreEntity);
+    }
+
+    if (genreEntities.length > 0) {
+      movieEntity.genres = genreEntities;
+    }
 
     return movieEntity;
   }

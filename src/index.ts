@@ -20,7 +20,6 @@ $log.appenders.set('file-info', {
   maxLogSize: 10485760,
 });
 
-
 new Server().start()
   .catch((er) => {
     $log.error(er);

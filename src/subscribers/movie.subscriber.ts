@@ -1,5 +1,5 @@
 import { EntitySubscriberInterface, EventSubscriber, InsertEvent } from 'typeorm';
-import { MovieEntity } from '../entities/media/movie.entity';
+import { MovieEntity } from '../entities/media/movie/movie.entity';
 import { slugify } from '../utils/slugify';
 
 @EventSubscriber()

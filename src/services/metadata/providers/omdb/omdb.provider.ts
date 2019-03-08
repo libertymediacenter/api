@@ -37,6 +37,10 @@ export class OmdbProvider implements MetadataProvider {
   }
 
   public async getByTitle(title: string, options: MetadataOptions): Promise<MovieMetadata> {
+    if (options.type !== 'movie') {
+      return null;
+    }
+
     const omdbSlugify = (subject) => {
       return subject.toString().toLowerCase()
         .replace(/\s:/g, '%3A')

@@ -1,6 +1,6 @@
 import { Controller, Get, PathParams, QueryParams, Status } from '@tsed/common';
 import { Name } from '@tsed/swagger';
-import { MovieEntity } from '../../entities/media/movie.entity';
+import { MovieEntity } from '../../entities/media/movie/movie.entity';
 import { Collection } from '../../interfaces/response';
 import { MovieService } from '../../services/movie/movie.service';
 
@@ -24,14 +24,7 @@ export class MovieController {
 
     const skip = pageNo * take;
 
-    const data = await this.movieService.paginate({skip, take});
-
-    return {
-      data: data.data,
-      total: data.count,
-      perPage: take,
-      pages: Math.ceil((data.count / take)),
-    };
+    return await this.movieService.paginate({skip, take});
   }
 
   @Get('/:slug')

@@ -1,7 +1,8 @@
 import { AxiosRequestConfig } from 'axios';
 import { Stream } from 'stream';
-import { IMovie, IPerson } from '../../interfaces/media';
+import { IMovie, IPerson, ISeries } from '../../interfaces/media';
 import { Image, ImageRequest } from './providers/provider.interface';
+import { BelongsToCollection } from './providers/tmdb/responses';
 
 export interface ImageStream {
   mimeType: string;
@@ -9,6 +10,12 @@ export interface ImageStream {
 }
 
 export interface MovieMetadata extends IMovie {
+  images?: ImageRequest[];
+  genres?: string[];
+  tmdbCollection?: BelongsToCollection
+}
+
+export interface TvMetadata extends ISeries {
   images?: ImageRequest[];
   genres?: string[];
 }

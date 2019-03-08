@@ -1,6 +1,6 @@
 import { JsonProperty, Required, Schema } from '@tsed/common';
 import { Column, CreateDateColumn, Entity, ManyToMany, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
-import { MovieEntity } from './media/movie.entity';
+import { MovieEntity } from './media/movie/movie.entity';
 import { SeriesEntity } from './media/tv/series.entity';
 import { EbookEntity } from './media/book/ebook.entity';
 

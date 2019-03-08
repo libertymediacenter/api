@@ -8,7 +8,7 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 import { IPerson } from '../interfaces/media';
-import { MovieCastEntity } from './media/movie-cast.entity';
+import { MovieCastEntity } from './media/movie/movie-cast.entity';
 
 @Schema({title: 'person'})
 @Entity({name: 'persons'})
@@ -33,12 +33,15 @@ export class PersonEntity implements IPerson {
   bio: string;
 
   @Column('text', {name: 'imdb_id', nullable: true})
+  @Property()
   imdbId: string;
 
   @Column('bigint', {name: 'tmdb_id', nullable: true})
+  @Property()
   tmdbId: number;
 
   @Column('text', {nullable: true})
+  @Property()
   image: string;
 
   @CreateDateColumn({name: 'created_at', type: 'timestamptz'})

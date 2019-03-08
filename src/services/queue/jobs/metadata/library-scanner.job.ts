@@ -1,24 +1,26 @@
 import { AfterRoutesInit, Service } from '@tsed/common';
 import { TypeORMService } from '@tsed/typeorm';
+import * as IORedis from 'ioredis';
+import * as _ from 'lodash';
 import { $log } from 'ts-log-debug';
 import { Repository } from 'typeorm';
-import * as IORedis from 'ioredis';
 
-import { LibraryEntity } from '../../../../entities/library.entity';
-import { MovieEntity } from '../../../../entities/media/movie.entity';
+import { LibraryEntity, LibraryType } from '../../../../entities/library.entity';
+import { MovieEntity } from '../../../../entities/media/movie/movie.entity';
+import { SeriesEntity } from '../../../../entities/media/tv/series.entity';
 import { DirectoryListing, LibraryScannerService } from '../../../library-scanner.service';
 import { LibraryService } from '../../../library.service';
 import { MetadataService } from '../../../metadata.service';
 import { MetadataOptions } from '../../../metadata/providers/provider.interface';
 import { RedisService } from '../../../redis.service';
 import { IJob } from '../../interfaces';
-import * as _ from 'lodash';
 
 @Service()
 export class LibraryScannerJob implements AfterRoutesInit {
   private _redis: IORedis.Redis;
 
   private _movieRepo: Repository<MovieEntity>;
+  private _seriesRepo: Repository<SeriesEntity>;
   private _libraryRepo: Repository<LibraryEntity>;
   private _library: LibraryEntity;
 
@@ -33,8 +35,12 @@ export class LibraryScannerJob implements AfterRoutesInit {
 
   public $afterRoutesInit(): void | Promise<any> {
     this._redis = this._redisService.getClient();
-    this._libraryRepo = this._typeOrmService.get().getRepository(LibraryEntity);
-    this._movieRepo = this._typeOrmService.get().getRepository(MovieEntity);
+
+    const connection = this._typeOrmService.get();
+
+    this._libraryRepo = connection.getRepository(LibraryEntity);
+    this._seriesRepo = connection.getRepository(SeriesEntity);
+    this._movieRepo = connection.getRepository(MovieEntity);
 
     this.poll()
       .then()
@@ -82,7 +88,7 @@ export class LibraryScannerJob implements AfterRoutesInit {
     for (const [idx, dir] of directoryListing.entries()) {
       this._hrtime = process.hrtime();
 
-      $log.info(`[LibraryScanner]: Scanning ${idx + 1} of ${directoryListing.length}`);
+      $log.info(`[LibraryScanner](${this._library.title}): Scanning ${idx + 1} of ${directoryListing.length}`);
 
       const options = await this.getItemOptions(dir.path);
       if (options) {
@@ -92,10 +98,50 @@ export class LibraryScannerJob implements AfterRoutesInit {
       this.logTime(`Scanned ${idx + 1} of ${directoryListing.length}`);
     }
 
-    this.logTime(`Finished scanning ${this._library.title}`)
+    this.logTime(`Finished scanning ${this._library.title}`);
   }
 
   private async getItemOptions(dir: string): Promise<MetadataOptions> {
+    switch (this._library.type) {
+      case LibraryType.Movie:
+        return this.getMovieOptions(dir);
+
+      case LibraryType.Series:
+        return this.getSeriesOptions(dir);
+      default:
+        return null;
+    }
+  }
+
+  private async getSeriesOptions(dir: string) {
+    //@ts-ignore
+    let options: MetadataOptions = {type: this._library.type, fetchPoster: true, fetchBackdrop: true};
+
+    try {
+      const series = await this._seriesRepo.findOneOrFail({
+        where: {path: dir},
+        cache: 60000,
+      });
+
+      if (series.poster) {
+        options.fetchPoster = false;
+      }
+
+      if (series.backdrop) {
+        options.fetchBackdrop = false;
+      }
+
+      if (_.has(series, ['title', 'startYear', 'runtime', 'tagline', 'plot', 'imdbId', 'theMovieDbId'])) {
+        return null;
+      }
+    } catch (e) {
+      // Series does not exist, proceed with all options.
+    }
+
+    return options;
+  }
+
+  private async getMovieOptions(dir: string) {
     //@ts-ignore
     let options: MetadataOptions = {type: this._library.type, fetchPoster: true, fetchBackdrop: true};
 

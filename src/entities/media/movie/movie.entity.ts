@@ -2,19 +2,20 @@ import { Description } from '@tsed/swagger';
 import {
   Column,
   CreateDateColumn,
-  Entity,
-  JoinColumn, JoinTable, ManyToMany, ManyToOne,
+  Entity, Index,
+  JoinColumn, JoinTable, ManyToMany, ManyToOne, OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { LibraryEntity } from '../library.entity';
+import { LibraryEntity } from '../../library.entity';
 import { IgnoreProperty, Property } from '@tsed/common';
-import { IMovie } from '../../interfaces/media';
-import { GenreEntity } from '../genre.entity';
-import { PersonEntity } from '../person.entity';
+import { IMovie } from '../../../interfaces/media';
+import { GenreEntity } from '../../genre.entity';
 import { MovieCastEntity } from './movie-cast.entity';
+import { MovieCollectionEntity } from './movie-collection.entity';
 
 @Entity({name: 'movies'})
+@Index('movies_slug_library_key', ['slug', 'library'], {unique: true})
 export class MovieEntity implements IMovie {
   @PrimaryGeneratedColumn('uuid', {name: 'uuid'})
   @IgnoreProperty()
@@ -78,11 +79,15 @@ export class MovieEntity implements IMovie {
   @Property({name: 'genres', use: GenreEntity})
   genres: GenreEntity[];
 
-  @ManyToOne(type => MovieCastEntity, {eager: true})
+  @OneToMany(type => MovieCastEntity, movieCast => movieCast.movie, {eager: true})
   @Property({name: 'cast', use: MovieCastEntity})
   cast: MovieCastEntity[];
 
   @ManyToOne(type => LibraryEntity, library => library.movies)
   @JoinColumn({name: 'library_uuid', referencedColumnName: 'uuid'})
   library?: LibraryEntity;
+
+  @ManyToOne(type => MovieCollectionEntity, movieCollection => movieCollection.movies)
+  @JoinColumn({name: 'collection_uuid'})
+  collection?: MovieCollectionEntity;
 }

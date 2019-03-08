@@ -46,10 +46,10 @@ export class SeasonEntity {
 
   /* Relations */
 
-  @OneToMany(type => SeriesEntity, series => series.seasons)
+  @ManyToOne(type => SeriesEntity, series => series.seasons)
   @JoinColumn({name: 'series_uuid', referencedColumnName: 'uuid'})
   series: SeriesEntity;
 
-  @ManyToOne(type => EpisodeEntity, episode => episode.season)
+  @OneToMany(type => EpisodeEntity, episode => episode.season)
   episodes: EpisodeEntity[];
 }

@@ -6,7 +6,7 @@ import { LibraryService } from './library.service';
 import { MetadataService } from './metadata.service';
 import { MovieMetadata } from './metadata/interfaces';
 import { IJob, JobType, Queue, QueuePriority } from './queue/interfaces';
-import { QueueService } from './queue/queue.service';
+import { QueueV1Service } from './queue/queue-v1.service';
 
 export interface Inode {
   path: string;
@@ -29,7 +29,7 @@ export class LibraryScannerService {
 
   constructor(private libraryService: LibraryService,
               private metadataService: MetadataService,
-              private queueService: QueueService) {
+              private queueService: QueueV1Service) {
   }
 
   public async scanLibraryByUuid(uuid: string): Promise<any> {
@@ -50,12 +50,12 @@ export class LibraryScannerService {
   }
 
 
-  public async getDirectoryListing(library: LibraryEntity): Promise<DirectoryListing[]> {
+  public async getDirectoryListing(library: LibraryEntity, subdirectories = 0): Promise<DirectoryListing[]> {
     const directories = await this.scan(library.path, 0);
     const listings: DirectoryListing[] = [];
 
     for (const dir of directories) {
-      const files = await this.scan(dir.path, 0);
+      const files = await this.scan(dir.path, subdirectories);
 
       listings.push({path: dir.path, files});
     }

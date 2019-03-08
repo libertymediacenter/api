@@ -4,7 +4,7 @@ import { RedisService } from '../redis.service';
 import { IJob } from './interfaces';
 
 @Service()
-export class QueueService implements OnInit {
+export class QueueV1Service implements OnInit {
   private _redis: IORedis.Redis;
 
   constructor(private redisService: RedisService) {

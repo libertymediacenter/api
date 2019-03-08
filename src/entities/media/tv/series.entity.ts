@@ -1,7 +1,7 @@
 import {
   Column,
   CreateDateColumn,
-  Entity,
+  Entity, Index,
   JoinColumn,
   ManyToOne,
   OneToMany,
@@ -14,6 +14,7 @@ import { IgnoreProperty, Property } from '@tsed/common';
 import { ISeries } from '../../../interfaces/media';
 
 @Entity({name: 'series'})
+@Index('series_slug_library_key', ['slug', 'library'], {unique: true})
 export class SeriesEntity implements ISeries {
   @PrimaryGeneratedColumn('uuid', {name: 'uuid'})
   @IgnoreProperty()
@@ -61,6 +62,12 @@ export class SeriesEntity implements ISeries {
   @Property()
   imdbId: string;
 
+  @Column('text', {nullable: true})
+  poster: string;
+
+  @Column('text', {nullable: true})
+  backdrop: string;
+
   @CreateDateColumn({name: 'created_at', type: 'timestamptz'})
   createdAt: Date;
 
@@ -69,10 +76,10 @@ export class SeriesEntity implements ISeries {
 
   /* Relations */
 
-  @OneToMany(type => LibraryEntity, library => library.series)
+  @ManyToOne(type => LibraryEntity, library => library.series)
   @JoinColumn({name: 'library_uuid', referencedColumnName: 'uuid'})
   library: LibraryEntity;
 
-  @ManyToOne(type => SeasonEntity, season => season.series)
+  @OneToMany(type => SeasonEntity, season => season.series)
   seasons: SeasonEntity[];
 }
