@@ -1,10 +1,12 @@
 import { Controller, Get, PathParams, QueryParams } from '@tsed/common';
+import { LibraryVideoService } from '../../services/library-video.service';
 import { AudioCodec, Preset, TranscodeService, VideoCodec, VideoProfile } from '../../services/transcode.service';
 
 @Controller('/transcode')
 export class TranscodeController {
 
-  constructor(private transcodeService: TranscodeService) {
+  constructor(private transcodeService: TranscodeService,
+              private libraryVideoService: LibraryVideoService) {
   }
 
   @Get('/:librarySlug/:videoSlug')
@@ -18,12 +20,12 @@ export class TranscodeController {
                    @QueryParams('videoBitrate') videoBitrate: number,
                    @QueryParams('videoCodec') videoCodec: string) {
 
-    const videoPath = '/Users/martin/Movies/Unfriended (2015)/Unfriended (2014) Bluray-1080p.mkv';
+    const video = await this.libraryVideoService.getVideo(librarySlug, videoSlug);
 
     const transcode = await this.transcodeService.start({
       startTime,
       segmentDuration: 10,
-      filePath: videoPath,
+      filePath: video.path,
       outputDirectory: `${__dirname}/../../../public/transcode`,
       qualityOptions: {
         audio: {

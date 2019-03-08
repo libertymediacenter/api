@@ -12,6 +12,7 @@ import { DirectoryListing, LibraryScannerService } from '../../../library-scanne
 import { LibraryService } from '../../../library.service';
 import { MetadataService } from '../../../metadata.service';
 import { MetadataOptions } from '../../../metadata/providers/provider.interface';
+import { MovieMediaService } from '../../../movie-media.service';
 import { RedisService } from '../../../redis.service';
 import { IJob } from '../../interfaces';
 
@@ -30,7 +31,8 @@ export class LibraryScannerJob implements AfterRoutesInit {
               private _redisService: RedisService,
               private _libraryScanner: LibraryScannerService,
               private _libraryService: LibraryService,
-              private _metadataService: MetadataService) {
+              private _metadataService: MetadataService,
+              private _movieMediaService: MovieMediaService) {
   }
 
   public $afterRoutesInit(): void | Promise<any> {
@@ -177,10 +179,13 @@ export class LibraryScannerJob implements AfterRoutesInit {
       const metadata = await this._metadataService.getByTitle(dirName, options);
 
       if (metadata) {
-        await this._libraryService.addItem(this._library, {
+        const movie = await this._libraryService.addItem(this._library, {
           dir,
           metadata,
         });
+
+        // @ts-ignore
+        await this._movieMediaService.create(dir, movie)
       }
     } catch (e) {
       $log.error(`Error while fetching metadata for ${dirName}`, e);

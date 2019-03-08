@@ -25,7 +25,6 @@ export enum LibraryType {
 @Index('library_slug_type_key', ['slug', 'type'], {unique: true})
 export class LibraryEntity implements ILibrary {
   @PrimaryGeneratedColumn('uuid', {name: 'uuid'})
-  @JsonProperty()
   uuid: string;
 
   @Column('citext')
@@ -49,7 +48,6 @@ export class LibraryEntity implements ILibrary {
 
   @Column('text')
   @Required()
-  @Property()
   path: string;
 
   @CreateDateColumn({name: 'created_at', type: 'timestamptz'})

@@ -13,6 +13,7 @@ import { IMovie } from '../../../interfaces/media';
 import { GenreEntity } from '../../genre.entity';
 import { MovieCastEntity } from './movie-cast.entity';
 import { MovieCollectionEntity } from './movie-collection.entity';
+import { MovieMediaEntity } from './movie-media.entity';
 
 @Entity({name: 'movies'})
 @Index('movies_slug_library_key', ['slug', 'library'], {unique: true})
@@ -83,8 +84,12 @@ export class MovieEntity implements IMovie {
   @Property({name: 'cast', use: MovieCastEntity})
   cast: MovieCastEntity[];
 
-  @ManyToOne(type => LibraryEntity, library => library.movies)
+  @OneToMany(type => MovieMediaEntity, movieMedia => movieMedia.movie)
+  media: MovieMediaEntity[];
+
+  @ManyToOne(type => LibraryEntity, library => library.movies, {eager: true})
   @JoinColumn({name: 'library_uuid', referencedColumnName: 'uuid'})
+  @Property()
   library?: LibraryEntity;
 
   @ManyToOne(type => MovieCollectionEntity, movieCollection => movieCollection.movies)

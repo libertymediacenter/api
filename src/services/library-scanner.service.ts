@@ -77,9 +77,8 @@ export class LibraryScannerService {
             });
           }
         })
-        .on('end', () => {
-          resolve(items);
-        });
+        .on('end', () => resolve(items))
+        .on('error', (e) => reject(e));
     }));
   }
 }
