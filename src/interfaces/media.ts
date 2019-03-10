@@ -58,7 +58,7 @@ export interface IEpisode {
 
 export interface IPerson {
   name: string;
-  photo?: string;
+  image?: string;
   bio?: string;
   imdbId?: string;
   tmdbId?: number;

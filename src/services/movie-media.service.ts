@@ -4,8 +4,10 @@ import { TypeORMService } from '@tsed/typeorm';
 import { Connection, Repository } from 'typeorm';
 import { MovieMediaEntity } from '../entities/media/movie/movie-media.entity';
 import { MovieEntity } from '../entities/media/movie/movie.entity';
+import { FFProbeResult } from '../interfaces/ffprobe.interfaces';
 import { ffprobe } from '../utils/ffprobe';
 import { DirectoryListing } from './library-scanner.service';
+import { $log } from 'ts-log-debug';
 
 @Service()
 export class MovieMediaService implements AfterRoutesInit {
@@ -25,14 +27,20 @@ export class MovieMediaService implements AfterRoutesInit {
 
     for (const file of dirListing.files) {
       if (!file.isDir) {
-        const probe = await ffprobe(file.path);
+        let probe: FFProbeResult;
+
+        try {
+          probe = await ffprobe(file.path);
+        } catch (e) {
+          $log.error(`[MovieMediaService]: Failed while trying to ffprobe ${file.path}`);
+        }
 
         const entity = new MovieMediaEntity();
         entity.movie = movieEntity;
         entity.path = file.path;
-        entity.bitrate = probe.format.bit_rate;
-        entity.height = probe.streams[0].height;
-        entity.width = probe.streams[0].width;
+        entity.bitrate = probe.format.bit_rate || null;
+        entity.height = probe.streams[0].height || null;
+        entity.width = probe.streams[0].width || null;
         entity.size = file.size;
 
         await this._movieMediaRepo.save(entity);

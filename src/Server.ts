@@ -32,7 +32,7 @@ dotenv.config({path: `${rootDir}/../.env`});
     '/': `${rootDir}/../public`,
   },
   logger: {
-    debug: false,
+    debug: true,
     logRequest: false,
     requestFields: ['reqId', 'method', 'url', 'headers', 'query', 'params', 'duration'],
   },

@@ -26,10 +26,6 @@ export class PersonEntity implements IPerson {
 
   @Column('text', {nullable: true})
   @Property()
-  photo: string;
-
-  @Column('text', {nullable: true})
-  @Property()
   bio: string;
 
   @Column('text', {name: 'imdb_id', nullable: true})

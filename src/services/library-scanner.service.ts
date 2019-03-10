@@ -67,6 +67,8 @@ export class LibraryScannerService {
     return new Promise<Inode[]>(((resolve, reject) => {
       const items: Inode[] = [];
 
+      $log.debug(`[LibraryScannerService]: Started scan of ${path} with depth ${depth}`);
+
       klaw(path, {depthLimit: depth})
         .on('data', (item) => {
           if (item.path !== path) {

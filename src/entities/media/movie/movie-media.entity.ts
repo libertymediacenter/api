@@ -21,16 +21,16 @@ export class MovieMediaEntity {
   @Column('text')
   path: string;
 
-  @Column('bigint')
+  @Column('bigint', {nullable: true})
   size: number;
 
-  @Column('int')
+  @Column('int', {nullable: true})
   height: number;
 
-  @Column('int')
+  @Column('int', {nullable: true})
   width: number;
 
-  @Column('int')
+  @Column('int', {nullable: true})
   bitrate: number;
 
   @CreateDateColumn({name: 'created_at'})
