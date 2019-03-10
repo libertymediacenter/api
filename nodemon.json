@@ -12,5 +12,5 @@
     "UV_THREADPOOL_SIZE": 128
   },
   "ext": "ts",
-  "exec": "node --max_old_space_size=2048 -r ts-node/register ./src/index.ts"
+  "exec": "ts-node --max_old_space_size=2048 ./src/index.ts"
 }
